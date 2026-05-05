@@ -1,0 +1,8 @@
+# Build files
+build/
+
+# OS junk
+.DS_Store
+
+# VS Code
+.vscode/
