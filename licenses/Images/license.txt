@@ -1,0 +1,9 @@
+Animated Top Down Survivor Player
+Source: opengameart.org
+Author: rileygombart
+License: CC-BY-3.0
+
+UI Pack
+Source: opengameart.org
+Author: Kenney
+License: CC0 Public Domain
