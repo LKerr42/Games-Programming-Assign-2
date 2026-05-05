@@ -8,7 +8,7 @@ OBJ := $(patsubst ${SRC}/%.cpp,${BUILD}/%.o,$(wildcard ${SRC}/*.cpp))
 ENGINE_OBJ := $(patsubst ./Engine/src/%.cpp,./Engine/build/%.o,$(wildcard ./Engine/src/*.cpp))
 SDL3_GFX_OBJ := $(patsubst ./Engine/SDL3_gfx/src/%.c,./Engine/SDL3_gfx/build/%.o,$(wildcard ./Engine/SDL3_gfx/src/*.c))
 
-target = game
+target = pest_control
 
 ifeq ($(OS),Windows_NT)
 	# Windows
