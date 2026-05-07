@@ -1,11 +1,12 @@
 #include <button.h>
 
 //Create a new button struct instance with texture background
-Button createButton(Vec2 pos, Vec2 S, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Texture backTex) {
+Button createButton(Vec2 pos, Vec2 padding, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Texture backTex) {
     Button newButton;
 
-    newButton.position = pos;
-    newButton.size = S;
+    newButton.size = measureText(str, F, pSize) + (padding * 2);
+    newButton.position = Vec2(pos.x - (newButton.size.x/2), pos.y - (newButton.size.y/2));
+    
     newButton.text = str;
     newButton.font = F;
     newButton.ptSize = pSize;
@@ -25,8 +26,9 @@ Button createButton(Vec2 pos, Vec2 S, const char *str, Font F, float pSize, Colo
 Button createButton(Vec2 pos, Vec2 padding, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Color backCol) {
     Button newButton;
 
-    newButton.position = pos;
     newButton.size = measureText(str, F, pSize) + (padding * 2);
+    newButton.position = Vec2(pos.x - (newButton.size.x/2), pos.y - (newButton.size.y/2));
+
     newButton.text = str;
     newButton.font = F;
     newButton.ptSize = pSize;

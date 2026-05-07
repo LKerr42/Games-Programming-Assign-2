@@ -5,16 +5,17 @@ namespace MenuScene {
     std::vector<Button> buttons;
 
     void init() {
+        setWindowTitle("Pest Control - Menu");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
-        Texture buttonBackground = loadTexture("./assets/images/button_rectangle_depth_gloss.png");
+        Texture buttonBackground = loadTexture("./assets/images/button_pink.png");
 
 
         buttons.push_back(createButton(
-            Vec2(50, 50), Vec2(250, 50), "PLay Game", pressStart, 25.0f, Color::black, Color::white, START, buttonBackground
+            Vec2((WINDOW_WIDTH/2), 500), Vec2(10, 10), "PLay Game", pressStart, 25.0f, Color::black, Color::white, START, buttonBackground
         ));
         
         buttons.push_back(createButton(
-            Vec2(50, 200), Vec2(10, 10), "Quit", pressStart, 25.0f, Color::black, Color::white, QUIT, Color::red
+            Vec2((WINDOW_WIDTH/2), 600), Vec2(10, 10), "Quit", pressStart, 25.0f, Color::black, Color::white, QUIT, buttonBackground
         ));
     }
 
@@ -44,8 +45,9 @@ namespace MenuScene {
 
     void render(float lag) {
         clear((Color){50, 50, 50, 255});
+        Vec2 titleSize = measureText("PEST CONTROL", pressStart, 40);
 
-        //drawText(Vec2(100, 100), "PEST CONTROL", (Color){219, 0, 172, 255}, pressStart, 24);
+        drawText(Vec2((WINDOW_WIDTH/2)-(titleSize.x/2), 100), "PEST CONTROL", (Color){219, 0, 172, 255}, pressStart, 40);
 
         for (Button &B : buttons) {
             renderButton(B);

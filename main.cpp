@@ -29,7 +29,6 @@ void loadScene(Scene scene) {
 // Initialise (called once at start)
 void init() {
     // Example
-    setWindowTitle("Pest Control - Menu");
     currentScene = MENU;
 
     MenuScene::init();

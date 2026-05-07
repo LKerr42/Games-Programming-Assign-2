@@ -24,7 +24,7 @@ typedef struct Button {
     bool hasTexture;
 } Button;
 
-Button createButton(Vec2 pos, Vec2 S, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Texture backTex);
+Button createButton(Vec2 pos, Vec2 padding, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Texture backTex);
 Button createButton(Vec2 pos, Vec2 padding, const char *str, Font F, float pSize, Color C, Color sC, Tag T, Color backCol);
 void renderButton(Button &B);
 

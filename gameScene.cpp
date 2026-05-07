@@ -4,6 +4,7 @@ namespace GameScene {
     Font pressStart;
 
     void init() {
+        setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
     }
 
