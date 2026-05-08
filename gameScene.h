@@ -3,11 +3,22 @@
 
 #include <engine.h>
 
-//#include <button.h>
+#include <button.h>
 #include <sceneManager.h>
 
-// GameScene Namespace, declaring all the basic functions to run the game
+// GameScene Namespace
 namespace GameScene {
+    class Hero {
+        public:
+            Vec2 position;
+            Vec2 size;
+            float angle;
+            int health;
+            Texture tex;
+
+            Hero();
+    };
+
     void init();
     void update(float dt);
     void render(float lag);
