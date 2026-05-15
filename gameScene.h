@@ -3,37 +3,42 @@
 
 #include <engine.h>
 
-#include <button.h>
 #include <sceneManager.h>
+#include <button.h>
+#include <collisions.h>
+#include <transform.h>
 
-#include <cfloat>
 #include <vector>
 
 // GameScene Namespace
 namespace GameScene {
     class Hero {
         public:
-            Vec2 position;
-            Vec2 size;
-            float angle;
+            Transform transform;
             int health;
             Texture tex;
-            Rect boundingBox;
-
-            Vec2 getBBpos() { return Vec2(boundingBox.x, boundingBox.y); }
-            Vec2 getBBsize() { return Vec2(boundingBox.width, boundingBox.height); }
 
             Hero();
     };
 
     class Laser {
         public:
-            Vec2 position;
-            Vec2 size;
+            Transform transform;
             float speed;
-            float angle;
 
             Laser();
+    };
+
+    typedef struct Wall {
+        float x, y, w, h;
+        bool active;
+        Texture activeTex, inactiveTex;
+    } Wall;
+
+    enum Level {
+        LEVEL_ONE,
+        LEVEL_TWO,
+        LEVEL_THREE
     };
 
     void init();

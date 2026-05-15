@@ -129,6 +129,16 @@ void drawRect(Vec2 pos, Vec2 size, Color color, float angle) {
     drawRect(pos.x, pos.y, size.x, size.y, color.r, color.g, color.b, color.a, angle);
 }
 
+void drawRect(Rect rectangle, Uint8 r, Uint8 g, Uint8 b, Uint8 a, float angle) {
+    // Call RGBA drawRect
+    drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height, r, g, b, a, angle);
+}
+
+void drawRect(Rect rectangle, Color color, float angle) {
+    // Call RGBA drawRect
+    drawRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height, color, angle);
+}
+
 
 // Fill Rectangle
 void fillRect(float x, float y, float width, float height, Uint8 r, Uint8 g, Uint8 b, Uint8 a, float angle) {

@@ -70,6 +70,8 @@ void drawRect(float x, float y, float width, float height, Uint8 r, Uint8 g, Uin
 void drawRect(float x, float y, float width, float height, Color color, float angle = 0.0f);
 void drawRect(Vec2 pos, Vec2 size, Uint8 r, Uint8 g, Uint8 b, Uint8 a=255, float angle = 0.0f);
 void drawRect(Vec2 pos, Vec2 size, Color color, float angle = 0.0f);
+void drawRect(Rect rectangle, Uint8 r, Uint8 g, Uint8 b, Uint8 a=255, float angle = 0.0f);
+void drawRect(Rect rectangle, Color color, float angle = 0.0f);
 
 // Fill Rectangle
 void fillRect(float x, float y, float width, float height, Uint8 r, Uint8 g, Uint8 b, Uint8 a=255, float angle = 0.0f);

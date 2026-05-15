@@ -53,3 +53,15 @@ bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float
     return collisionAABBRectangle(pos1, size1, pos2_r, size2, angle2-angle1) &&
            collisionAABBRectangle(pos2, size2, pos1_r, size1, angle1-angle2);
 }
+
+// Collision (Rect-Rectangle)
+bool collision(Rect rect, float rectAngle, Vec2 pos1, Vec2 size1, float angle1) {
+    return collision(Vec2(rect.x, rect.y), Vec2(rect.width, rect.height), rectAngle,
+                    pos1, size1, angle1);
+}
+
+// Collision (Transform-Transform)
+bool collision(Transform transform1, Transform transform2) {
+    return collision(transform1.getPosition(), transform1.getSize(), transform1.getAngle(),
+                    transform2.getPosition(), transform2.getSize(), transform2.getAngle());
+}

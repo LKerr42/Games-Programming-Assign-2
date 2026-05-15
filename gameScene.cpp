@@ -6,67 +6,53 @@ namespace GameScene {
     Hero hero;
 
     std::vector<Laser> lasers;
+    std::vector<Wall> walls;
+
+    Level currentLevel = LEVEL_ONE;
 
     void init() {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
 
         hero.tex = loadTexture("./assets/images/hero.png");
+
+        walls.push_back((Wall){
+            300, 0, 200, 200,
+            true, 
+            NULL, NULL
+        });
     }
 
     void update(float dt) {
-        //Move hero
-        if (keyIsPressed(KEY_W)) hero.position.y -= 3;
-        if (keyIsPressed(KEY_A)) hero.position.x -= 3;
-        if (keyIsPressed(KEY_S)) hero.position.y += 3;
-        if (keyIsPressed(KEY_D)) hero.position.x += 3;
+        //Check for collisions, and then try to move player
+        hero.transform.savePrevPos();
 
-        // Update hero angle
-        Vec2 mousePos = mousePosition();
+        if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -3));
+        if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-3, 0));
+        if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, 3));
+        if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(3, 0));
 
-        Vec2 forward = mousePos - hero.position;
-
-        hero.angle = atan2(forward.y, forward.x) / M_PI * 180.0f;
-
-        //calculate bounding box
-        float minX = FLT_MAX, maxX = -FLT_MAX, minY = FLT_MAX, maxY = -FLT_MAX;
-        float angleRads = hero.angle * M_PI / 180.0f;
-
-        Vec2 cornerPos[4] = {
-            Vec2(-hero.size.x/2, hero.size.y/2),
-            Vec2(hero.size.x/2, hero.size.y/2),
-            Vec2(hero.size.x/2, -hero.size.y/2),
-            Vec2(-hero.size.x/2, -hero.size.y/2)
-        };
-
-        for (int i = 0; i < 4; i++) {
-            Vec2 currentPos = cornerPos[i];
-            cornerPos[i].x = (currentPos.x * cos(angleRads) - currentPos.y * sin(angleRads)) + hero.position.x;
-            cornerPos[i].y = (currentPos.x * sin(angleRads) + currentPos.y * cos(angleRads)) + hero.position.y;
-
-            minX = min(minX, cornerPos[i].x);
-            minY = min(minY, cornerPos[i].y);
-            maxX = max(maxX, cornerPos[i].x);
-            maxY = max(maxY, cornerPos[i].y);
+        //check for wall collisions
+        for (Wall W : walls) {
+            if (collision(hero.transform.getBoundingBox(), 0.0f, 
+                Vec2(W.x, W.y), Vec2(W.w, W.h), 0.0f)) {
+                hero.transform.resetPos();
+            }
         }
 
-        hero.boundingBox = (Rect){
-            minX + (hero.size.x/2), minY + (hero.size.y/2),
-            maxX - minX,
-            maxY - minY
-        };
+        hero.transform.rotateTo(mousePosition());
+        hero.transform.updateBoundingBox();
 
         //update lasers
-        if (keyPressedThisFrame(KEY_SPACE)) lasers.emplace_back();
+        if (mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) lasers.emplace_back();
 
         for (int i = 0; i < lasers.size();) {
             Laser &L = lasers.at(i);
-            float angleRad = L.angle * M_PI / 180.0f;
 
-            L.position.x += cos(angleRad) * L.speed * dt;
-            L.position.y += sin(angleRad) * L.speed * dt;
+            L.transform.translateByAngle(L.speed * dt);
 
-            if (L.position.x > WINDOW_WIDTH || L.position.x < 0 || L.position.y > WINDOW_HEIGHT || L.position.y < 0) {
+            if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
+                L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
                 lasers.erase(lasers.begin() + i);
             } else {
                 i++;
@@ -79,12 +65,16 @@ namespace GameScene {
 
         drawText(Vec2(10, 10), "Gaming time", (Color){219, 0, 172, 255}, pressStart, 24);
 
-        drawRect(hero.position, hero.size, Color::green, hero.angle);
-        drawRect(hero.getBBpos(), hero.getBBsize(), Color::red);
-        drawTexture(hero.tex, hero.position, hero.size, hero.angle);
+        drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
+        drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
+        drawTexture(hero.tex, hero.transform.getPosition(), hero.transform.getSize(), hero.transform.getAngle());
 
         for (Laser &L : lasers) {
-            fillRect(L.position, L.size, Color::green, L.angle);
+            fillRect(L.transform.getPosition(), L.transform.getSize(), Color::green, L.transform.getAngle());
+        }
+
+        for (Wall &W : walls) {
+            drawRect(W.x, W.y, W.w, W.h, Color::yellow);
         }
     }
 
@@ -93,17 +83,12 @@ namespace GameScene {
     }
 
     Hero::Hero() {
-        position = Vec2(100, WINDOW_HEIGHT/2);
-        size = Vec2(40, 25);
-        boundingBox = (Rect){position.x, position.y, size.x, size.y};
+        transform = Transform(Vec2(100, WINDOW_HEIGHT/2), 0.0f, Vec2(40, 25));
         health = 100;
-        angle = 0.0f;
     };
 
     Laser::Laser() {
-        position = hero.position;
-        size = Vec2(10, 3);
-        angle = hero.angle;
+        transform = Transform(hero.transform.getPosition(LOCAL), hero.transform.getAngle(), Vec2(13, 3));
         speed = 300.0f;
     };
 }
