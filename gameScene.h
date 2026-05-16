@@ -30,7 +30,7 @@ namespace GameScene {
     };
 
     typedef struct Wall {
-        float x, y, w, h;
+        Rect rect;
         bool active;
         Texture activeTex, inactiveTex;
     } Wall;

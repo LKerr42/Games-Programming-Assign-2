@@ -2,7 +2,6 @@
 
 namespace GameScene {
     Font pressStart;
-    Texture temp;
     Hero hero;
 
     std::vector<Laser> lasers;
@@ -17,31 +16,44 @@ namespace GameScene {
         hero.tex = loadTexture("./assets/images/hero.png");
 
         walls.push_back((Wall){
-            300, 0, 200, 200,
+            (Rect){300, 0, 200, 200},
             true, 
             NULL, NULL
         });
     }
 
     void update(float dt) {
-        //Check for collisions, and then try to move player
-        hero.transform.savePrevPos();
-
+        //move hero
         if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -3));
         if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-3, 0));
         if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, 3));
         if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(3, 0));
 
-        //check for wall collisions
-        for (Wall W : walls) {
-            if (collision(hero.transform.getBoundingBox(), 0.0f, 
-                Vec2(W.x, W.y), Vec2(W.w, W.h), 0.0f)) {
-                hero.transform.resetPos();
-            }
-        }
-
         hero.transform.rotateTo(mousePosition());
         hero.transform.updateBoundingBox();
+
+        //Detect collision, and then calculate overlap to push back hero
+        for (Wall W : walls) {
+            if (collision(hero.transform.getBoundingBox(), 0.0f, W.rect, 0.0f)) {
+                Rect heroBox = hero.transform.getBoundingBox();
+                float left = (heroBox.x + heroBox.width) - W.rect.x;
+                float right = (W.rect.x +  W.rect.width) - heroBox.x;
+                float top = (heroBox.y + heroBox.height) - W.rect.y;
+                float bottom = (W.rect.y +  W.rect.height) - heroBox.y;
+
+                float minOverlap = min(min(left, right), min(top, bottom));
+
+                if (minOverlap == left) {
+                    hero.transform.translate(Vec2(-left, 0));
+                } else if (minOverlap == right) {
+                    hero.transform.translate(Vec2(right, 0));
+                } else if (minOverlap == top) {
+                    hero.transform.translate(Vec2(0, -top));
+                } else if (minOverlap == bottom) {
+                    hero.transform.translate(Vec2(0, bottom));
+                }
+            }
+        }
 
         //update lasers
         if (mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) lasers.emplace_back();
@@ -74,7 +86,7 @@ namespace GameScene {
         }
 
         for (Wall &W : walls) {
-            drawRect(W.x, W.y, W.w, W.h, Color::yellow);
+            drawRect(W.rect, Color::yellow);
         }
     }
 

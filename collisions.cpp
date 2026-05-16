@@ -54,10 +54,10 @@ bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float
            collisionAABBRectangle(pos2, size2, pos1_r, size1, angle1-angle2);
 }
 
-// Collision (Rect-Rectangle)
-bool collision(Rect rect, float rectAngle, Vec2 pos1, Vec2 size1, float angle1) {
-    return collision(Vec2(rect.x, rect.y), Vec2(rect.width, rect.height), rectAngle,
-                    pos1, size1, angle1);
+// Collision (Rect-Rect)
+bool collision(Rect rect1, float rectAngle1, Rect rect2, float rectAngle2) {
+    return collision(Vec2(rect1.x, rect1.y), Vec2(rect1.width, rect1.height), rectAngle1,
+                    Vec2(rect2.x, rect2.y), Vec2(rect2.width, rect2.height), rectAngle2);
 }
 
 // Collision (Transform-Transform)
