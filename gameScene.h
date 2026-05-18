@@ -7,20 +7,13 @@
 #include <button.h>
 #include <collisions.h>
 #include <transform.h>
+#include <hero.h>
 
+#include <iostream>
 #include <vector>
 
 // GameScene Namespace
 namespace GameScene {
-    class Hero {
-        public:
-            Transform transform;
-            int health;
-            Texture tex;
-
-            Hero();
-    };
-
     class Laser {
         public:
             Transform transform;
@@ -39,6 +32,11 @@ namespace GameScene {
         LEVEL_ONE,
         LEVEL_TWO,
         LEVEL_THREE
+    };
+
+    enum DisplayState {
+        HUD,
+        ELEMENT
     };
 
     void init();

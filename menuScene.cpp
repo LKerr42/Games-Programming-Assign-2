@@ -8,6 +8,7 @@ namespace MenuScene {
         setWindowTitle("Pest Control - Menu");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
         Texture buttonBackground = loadTexture("./assets/images/button_pink.png");
+        SDL_SetTextureScaleMode(buttonBackground.texture, SDL_SCALEMODE_NEAREST);
 
 
         buttons.push_back(createButton(

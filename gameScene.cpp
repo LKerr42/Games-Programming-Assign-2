@@ -2,24 +2,37 @@
 
 namespace GameScene {
     Font pressStart;
+    Texture hudBase;
+    Rect hudDest;
     Hero hero;
 
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
 
     Level currentLevel = LEVEL_ONE;
+    DisplayState currentDisplay = HUD;
+
 
     void init() {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
 
         hero.tex = loadTexture("./assets/images/hero.png");
+        SDL_SetTextureScaleMode(hero.tex.texture, SDL_SCALEMODE_NEAREST);
+        hudBase = loadTexture("./assets/images/hud_base.png");
+        float hudWidth = WINDOW_WIDTH - (WINDOW_WIDTH / 5), hudHeight = WINDOW_HEIGHT - (WINDOW_HEIGHT / 5);
+        hudDest = (Rect){0, 0, hudWidth, hudHeight};
+        SDL_SetTextureScaleMode(hudBase.texture, SDL_SCALEMODE_NEAREST);
 
-        walls.push_back((Wall){
-            (Rect){300, 0, 200, 200},
-            true, 
-            NULL, NULL
-        });
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300, 0, 300, 200}, true, NULL, NULL});
+
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
+
+        std::cout << "w: " << WINDOW_WIDTH << " h: " << WINDOW_HEIGHT << "\n";
     }
 
     void update(float dt) {
@@ -56,7 +69,7 @@ namespace GameScene {
         }
 
         //update lasers
-        if (mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) lasers.emplace_back();
+        if (mouseButtonIsPressed(MOUSE_BUTTON_LEFT)) lasers.emplace_back();
 
         for (int i = 0; i < lasers.size();) {
             Laser &L = lasers.at(i);
@@ -75,7 +88,7 @@ namespace GameScene {
     void render(float lag) {
         clear((Color){50, 50, 50, 255});
 
-        drawText(Vec2(10, 10), "Gaming time", (Color){219, 0, 172, 255}, pressStart, 24);
+        //drawText(Vec2(10, 10), "Gaming time", (Color){219, 0, 172, 255}, pressStart, 24);
 
         drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
         drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
@@ -88,16 +101,22 @@ namespace GameScene {
         for (Wall &W : walls) {
             drawRect(W.rect, Color::yellow);
         }
+
+        if (currentDisplay == HUD) {
+            drawTexture(hudBase, hudDest);
+
+            //full width 256
+            Color healthCol = (hero.health > 50) ? Color::green : Color::red;
+            float healthBarWidth = 256 * (hero.health / 100);
+            fillRect(Vec2(176, 40), Vec2(healthBarWidth, 24), healthCol);
+        } else {
+            fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), (Color){0, 0, 0, 128});
+        }
     }
 
     void close() {
 
     }
-
-    Hero::Hero() {
-        transform = Transform(Vec2(100, WINDOW_HEIGHT/2), 0.0f, Vec2(40, 25));
-        health = 100;
-    };
 
     Laser::Laser() {
         transform = Transform(hero.transform.getPosition(LOCAL), hero.transform.getAngle(), Vec2(13, 3));
