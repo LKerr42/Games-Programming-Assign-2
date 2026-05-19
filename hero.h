@@ -12,9 +12,9 @@ class Hero {
         int health;
         Texture tex;
 
-        Weapon currWeapon;
-        Armour currArmour;
-        Upgrade currUpgrade;
+        Weapon *currWeapon; 
+        Armour *currArmour;
+        Upgrade *currUpgrade;
 
         Hero();
 };

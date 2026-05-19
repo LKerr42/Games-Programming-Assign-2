@@ -9,20 +9,50 @@ enum UpgradeType {
     INVISIBILITY
 };
 
-typedef struct Weapon {
-    float fireSpeed, reloadSpeed, energy;
-    Texture largeTex, smallTex;
-} Weapon;
+class Item {
+    public:
+        Texture *tex;
+        Rect dst;
 
-typedef struct Armour {
-    float resistance, healthUpgrade;
-    Texture largeTex, smallTex;
-} Armour;
+        Item(Texture *T, Rect d) : tex(T), dst(d) {
+                dst.width = dst.height = 30;
+            };
 
-typedef struct Upgrade {
-    UpgradeType type;
-    float value;
-    Texture largeTex, smallTex;
-} Upgrade;
+        virtual ~Item() = default;
+};
+
+class Weapon : public Item {
+    public:
+        float fireSpeed, reloadSpeed;
+        float currEnergy, fullEnergy;
+
+        Weapon(Texture *T, Rect d, float fs, float rs, float ce, float fe) : Item(T, d) {
+            fireSpeed = fs;
+            reloadSpeed = rs;
+            currEnergy = ce;
+            fullEnergy = fe;
+        };
+};
+
+class Armour : public Item {
+    public:
+        float resistance, healthUpgrade;
+
+        Armour(Texture *T, Rect d, float r, float hu) : Item(T, d){
+            resistance = r;
+            healthUpgrade = hu;
+        };
+};
+
+class Upgrade : public Item {
+    public:
+        UpgradeType type;
+        float value;
+
+        Upgrade(Texture *T, Rect d, UpgradeType t, float v) : Item(T, d) {
+            type = t;
+            value = v;
+        };
+};
 
 #endif
