@@ -14,7 +14,7 @@ namespace GameScene {
 
     Level currentLevel = LEVEL_ONE;
     DisplayState currentDisplay = HUD;
-    Texture weapons[3], armours[3], upgrades[3], background;
+    Texture weapons[6], armours[6], upgrades[6], background;
 
 
     void init() {
@@ -27,24 +27,32 @@ namespace GameScene {
         SDL_SetTextureScaleMode(hero.tex.texture, SDL_SCALEMODE_NEAREST);
 
         //init items
-        weapons[0] = loadTexture("./assets/images/weapon_default.png");
-        weapons[1] = loadTexture("./assets/images/weapon_default.png");
-        weapons[2] = loadTexture("./assets/images/weapon_default.png");
+        //large
+        weapons[0] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[1] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[2] = loadTexture("./assets/images/weapon_large_01.png");
 
-        armours[0] = loadTexture("./assets/images/armour_default.png");
-        armours[1] = loadTexture("./assets/images/armour_default.png");
-        armours[2] = loadTexture("./assets/images/armour_default.png");
-        for (int i = 0; i < 3; i++) {
+        armours[0] = loadTexture("./assets/images/armour_large_01.png");
+        armours[1] = loadTexture("./assets/images/armour_large_01.png");
+        armours[2] = loadTexture("./assets/images/armour_large_01.png");
+
+        //small
+        weapons[3] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[4] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[5] = loadTexture("./assets/images/weapon_large_01.png");
+
+        armours[3] = loadTexture("./assets/images/armour_large_01.png");
+        armours[4] = loadTexture("./assets/images/armour_large_01.png");
+        armours[5] = loadTexture("./assets/images/armour_large_01.png");
+        for (int i = 0; i < 6; i++) {
             SDL_SetTextureScaleMode(weapons[i].texture, SDL_SCALEMODE_NEAREST);
             SDL_SetTextureScaleMode(armours[i].texture, SDL_SCALEMODE_NEAREST);
         }
         
-        Weapon *defaultWeapon = new Weapon(&weapons[0], (Rect){0, 0, 0, 0}, 100, 100, 100, 100);
-        hero.currWeapon = defaultWeapon;
+        hero.currWeapon = new Weapon(&weapons[0], &weapons[3], (Rect){0, 0, 0, 0}, 100, 100, 100);
 
-        Armour *defaultArmour = new Armour(&armours[0], (Rect){640, WINDOW_HEIGHT/2, 0, 0}, 100, 100);
-
-        levelItems.push_back(defaultArmour);
+        levelItems.push_back(new Armour(&armours[0], &armours[3], (Rect){640, WINDOW_HEIGHT/2, 0, 0}, 100, 100));
+        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, WINDOW_HEIGHT/2, 0, 0}, 100, 100, 100));
 
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
@@ -143,7 +151,7 @@ namespace GameScene {
 
         //display items
         for (Item* item : levelItems) {
-            drawTexture(*item->tex, item->dst);
+            drawTexture(*item->largeTexture, item->dst);
         }
 
         //overlay display

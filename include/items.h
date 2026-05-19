@@ -11,12 +11,12 @@ enum UpgradeType {
 
 class Item {
     public:
-        Texture *tex;
+        Texture *largeTexture, *smallTexture;
         Rect dst;
 
-        Item(Texture *T, Rect d) : tex(T), dst(d) {
-                dst.width = dst.height = 30;
-            };
+        Item(Texture *large, Texture *small, Rect d) : largeTexture(large), smallTexture(small), dst(d) {
+            dst.width = dst.height = 40;
+        };
 
         virtual ~Item() = default;
 };
@@ -26,10 +26,10 @@ class Weapon : public Item {
         float fireSpeed, reloadSpeed;
         float currEnergy, fullEnergy;
 
-        Weapon(Texture *T, Rect d, float fs, float rs, float ce, float fe) : Item(T, d) {
+        Weapon(Texture *large, Texture *small, Rect d, float fs, float rs,float fe) : Item(large, small, d) {
             fireSpeed = fs;
             reloadSpeed = rs;
-            currEnergy = ce;
+            currEnergy = fe;
             fullEnergy = fe;
         };
 };
@@ -38,7 +38,7 @@ class Armour : public Item {
     public:
         float resistance, healthUpgrade;
 
-        Armour(Texture *T, Rect d, float r, float hu) : Item(T, d){
+        Armour(Texture *large, Texture *small, Rect d, float r, float hu) : Item(large, small, d){
             resistance = r;
             healthUpgrade = hu;
         };
@@ -49,7 +49,7 @@ class Upgrade : public Item {
         UpgradeType type;
         float value;
 
-        Upgrade(Texture *T, Rect d, UpgradeType t, float v) : Item(T, d) {
+        Upgrade(Texture *large, Texture *small, Rect d, UpgradeType t, float v) : Item(large, small, d) {
             type = t;
             value = v;
         };
