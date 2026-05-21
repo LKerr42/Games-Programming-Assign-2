@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
 
 // GameScene Namespace
 namespace GameScene {
@@ -43,6 +44,9 @@ namespace GameScene {
     void update(float dt);
     void render(float lag);
     void close();
+
+    void openItemImages();
+    void displayDialogue(const char *msg);
 }
 
 #endif

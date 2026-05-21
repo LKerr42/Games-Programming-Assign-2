@@ -8,9 +8,10 @@
     
 class Hero {
     public:
+        Texture tex;
         Transform transform;
         int health;
-        Texture tex;
+        float sightRad;
 
         Weapon *currWeapon; 
         Armour *currArmour;

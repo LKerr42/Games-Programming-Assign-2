@@ -3,6 +3,8 @@
 
 #include <engine.h>
 
+class Hero;
+
 enum UpgradeType {
     DASH,
     MELEE,
@@ -18,6 +20,8 @@ class Item {
             dst.width = dst.height = 40;
         };
 
+        virtual void pickup(Hero& hero) = 0;
+        virtual Item* dropItem(Hero& hero) = 0;
         virtual ~Item() = default;
 };
 
@@ -32,6 +36,9 @@ class Weapon : public Item {
             currEnergy = fe;
             fullEnergy = fe;
         };
+
+        void pickup(Hero& hero) override;
+        Item* dropItem(Hero& hero) override;
 };
 
 class Armour : public Item {
@@ -42,6 +49,9 @@ class Armour : public Item {
             resistance = r;
             healthUpgrade = hu;
         };
+
+        void pickup(Hero& hero) override;
+        Item* dropItem(Hero& hero) override;
 };
 
 class Upgrade : public Item {
@@ -53,6 +63,9 @@ class Upgrade : public Item {
             type = t;
             value = v;
         };
+
+        void pickup(Hero& hero) override;
+        Item* dropItem(Hero& hero) override;
 };
 
 #endif

@@ -1,8 +1,9 @@
 #include <hero.h>
 
 Hero::Hero() {
-    transform = Transform(Vec2(150, WINDOW_HEIGHT/2), 0.0f, Vec2(40, 25));
+    transform = Transform(Vec2(150, WINDOW_HEIGHT/2.0f), 0.0f, Vec2(40, 25));
     health = 100;
+    sightRad = 70.0f;
 
     currWeapon = nullptr; 
     currArmour = nullptr; 

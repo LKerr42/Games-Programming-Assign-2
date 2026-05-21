@@ -27,4 +27,7 @@ bool collision(Transform transform1, Transform transform2);
 // (Not to be used directly)
 bool collisionAABBRectangle(Vec2 pos0, Vec2 size0, Vec2 pos1, Vec2 size1, float angle1);
 
+// Collision (AABB-Circle)
+bool collision(Vec2 pos1, float radius1, Vec2 pos2, Vec2 size2);
+
 #endif

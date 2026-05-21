@@ -10,12 +10,16 @@ namespace GameScene {
 
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
-    std::vector<Item*> levelItems;
+    std::list<Item*> levelItems;
+
+    char *currDialogue;
+    bool displayingDialogue = false;
 
     Level currentLevel = LEVEL_ONE;
     DisplayState currentDisplay = HUD;
     Texture weapons[6], armours[6], upgrades[6], background;
 
+    const float halfWindowHeight = WINDOW_HEIGHT / 2.0f;
 
     void init() {
         setWindowTitle("Pest Control - Playing");
@@ -27,32 +31,12 @@ namespace GameScene {
         SDL_SetTextureScaleMode(hero.tex.texture, SDL_SCALEMODE_NEAREST);
 
         //init items
-        //large
-        weapons[0] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[1] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[2] = loadTexture("./assets/images/weapon_large_01.png");
-
-        armours[0] = loadTexture("./assets/images/armour_large_01.png");
-        armours[1] = loadTexture("./assets/images/armour_large_01.png");
-        armours[2] = loadTexture("./assets/images/armour_large_01.png");
-
-        //small
-        weapons[3] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[4] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[5] = loadTexture("./assets/images/weapon_large_01.png");
-
-        armours[3] = loadTexture("./assets/images/armour_large_01.png");
-        armours[4] = loadTexture("./assets/images/armour_large_01.png");
-        armours[5] = loadTexture("./assets/images/armour_large_01.png");
-        for (int i = 0; i < 6; i++) {
-            SDL_SetTextureScaleMode(weapons[i].texture, SDL_SCALEMODE_NEAREST);
-            SDL_SetTextureScaleMode(armours[i].texture, SDL_SCALEMODE_NEAREST);
-        }
+        openItemImages();
         
         hero.currWeapon = new Weapon(&weapons[0], &weapons[3], (Rect){0, 0, 0, 0}, 100, 100, 100);
 
-        levelItems.push_back(new Armour(&armours[0], &armours[3], (Rect){640, WINDOW_HEIGHT/2, 0, 0}, 100, 100));
-        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, WINDOW_HEIGHT/2, 0, 0}, 100, 100, 100));
+        levelItems.push_back(new Armour(&armours[0], &armours[3], (Rect){640, halfWindowHeight, 0, 0}, 100, 100));
+        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, halfWindowHeight, 0, 0}, 100, 100, 100));
 
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
@@ -61,13 +45,13 @@ namespace GameScene {
         SDL_SetTextureScaleMode(hudBase.texture, SDL_SCALEMODE_NEAREST);
 
         //init level
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900, 0, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600, 0, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, 0, 300, 200}, true, NULL, NULL});
 
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300, WINDOW_HEIGHT-200, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
     }
@@ -125,6 +109,32 @@ namespace GameScene {
                 i++;
             }
         }
+
+        //check contact with items
+        int ammountColls = 0;
+        for (auto item = levelItems.begin(); item != levelItems.end(); ) {
+            if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
+                    Vec2((*item)->dst.x, (*item)->dst.y), Vec2((*item)->dst.width, (*item)->dst.height))) {
+                currDialogue = "'E' to grab";
+                displayingDialogue = true;
+                ammountColls++;
+
+                if (keyPressedThisFrame(KEY_E)){
+                    Item *dropped = (*item)->dropItem(hero);
+                    if (dropped != nullptr) levelItems.push_back(dropped);
+                    (*item)->pickup(hero);
+                    item = levelItems.erase(item);
+                    break;
+                } else {
+                    ++item;
+                }
+            } else {
+                ++item;
+            }
+        }
+        if (ammountColls == 0) displayingDialogue = false;
+
+        //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
     }
 
     void render(float lag) {
@@ -135,9 +145,14 @@ namespace GameScene {
         drawTexture(background, Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         //hero
+        drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
         drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
         drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
         drawTexture(hero.tex, hero.transform.getPosition(), hero.transform.getSize(), hero.transform.getAngle());
+
+        if (displayingDialogue) {
+            displayDialogue(currDialogue);
+        }
 
         //lasers
         for (Laser &L : lasers) {
@@ -169,7 +184,9 @@ namespace GameScene {
             fillRect(Vec2(20*HUD_PIXEL_SIZE, 12*HUD_PIXEL_SIZE), Vec2(energyBarWidth, 16), (Color){66, 135, 245, 255});
 
             //inventory
-            //if (hero.currWeapon != nullptr) drawTexture(*hero.currWeapon->tex, (Rect){22+4, 180+4, 30, 30});
+            if (hero.currWeapon != nullptr) drawTexture(*hero.currWeapon->smallTexture, (Rect){24, 24*HUD_PIXEL_SIZE, 40, 40});
+            if (hero.currArmour != nullptr) drawTexture(*hero.currArmour->smallTexture, (Rect){24, 32*HUD_PIXEL_SIZE, 40, 40});
+            if (hero.currUpgrade != nullptr) drawTexture(*hero.currUpgrade->smallTexture, (Rect){24, 40*HUD_PIXEL_SIZE, 40, 40});
         } else {
             fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), (Color){0, 0, 0, 128});
         }
@@ -177,6 +194,37 @@ namespace GameScene {
 
     void close() {
 
+    }
+
+    void openItemImages() {
+        //large
+        weapons[0] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[1] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[2] = loadTexture("./assets/images/weapon_large_01.png");
+
+        armours[0] = loadTexture("./assets/images/armour_large_01.png");
+        armours[1] = loadTexture("./assets/images/armour_large_01.png");
+        armours[2] = loadTexture("./assets/images/armour_large_01.png");
+
+        //small
+        weapons[3] = loadTexture("./assets/images/weapon_small_01.png");
+        weapons[4] = loadTexture("./assets/images/weapon_small_01.png");
+        weapons[5] = loadTexture("./assets/images/weapon_small_01.png");
+
+        armours[3] = loadTexture("./assets/images/armour_small_01.png");
+        armours[4] = loadTexture("./assets/images/armour_small_01.png");
+        armours[5] = loadTexture("./assets/images/armour_small_01.png");
+        for (int i = 0; i < 6; i++) {
+            SDL_SetTextureScaleMode(weapons[i].texture, SDL_SCALEMODE_NEAREST);
+            SDL_SetTextureScaleMode(armours[i].texture, SDL_SCALEMODE_NEAREST);
+        }
+    }
+
+    void displayDialogue(const char *msg) {
+        Vec2 heroPos = hero.transform.getPosition(LOCAL);
+        Vec2 msgSize = measureText(msg, pressStart, 14);
+        Vec2 pos = Vec2(heroPos.x - (msgSize.x/2), heroPos.y - 30);
+        drawText(pos, msg, Color::white, pressStart, 14, 0.0f);
     }
 
     Laser::Laser() {

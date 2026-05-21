@@ -65,3 +65,36 @@ bool collision(Transform transform1, Transform transform2) {
     return collision(transform1.getPosition(), transform1.getSize(), transform1.getAngle(),
                     transform2.getPosition(), transform2.getSize(), transform2.getAngle());
 }
+
+// Collision (AABB-Circle)
+bool collision(Vec2 pos1, float radius1, Vec2 pos2, Vec2 size2) {
+    float tx, ty;
+
+    if (collision(pos1, pos2, size2)) {
+        return true;
+    }
+
+    // Find point on Rectangle closest to circle x
+    if (pos1.x < pos2.x) { //left
+        tx = pos2.x; 
+    } else if (pos1.x > pos2.x + size2.x) { //right
+        tx = pos2.x + size2.x; 
+    } else { //circle
+        tx = pos1.x; 
+    }
+
+    // Find point on Rectangle closest to Circle y
+    if (pos1.y < pos2.y) { //top
+        ty = pos2.y; 
+    } else if (pos1.y > pos2.y + size2.y) { //bottom
+        ty = pos2.y + size2.y; 
+    } else { // circle
+        ty = pos1.y; 
+    }
+
+    // Compare distance between circle centre and closest point
+    if (distance(Vec2(tx, ty), pos1) < radius1) {
+        return true;
+    }
+    return false;
+}
