@@ -1,6 +1,20 @@
 #include <items.h>
 #include <hero.h>
 
+// -- Weapon --
+Weapon::Weapon(Texture *large, Texture *small, Rect d, float fs, float rs, float fe) : Item(large, small, d) {
+    //timers
+    fireTimer = (Timer*)calloc(1, sizeof(Timer));
+    activateTimer(fireTimer, fs, true, true);
+
+    reloadTimer = (Timer*)calloc(1, sizeof(Timer));
+    activateTimer(reloadTimer, rs, false, true);
+
+    //energy
+    currEnergy = fe;
+    fullEnergy = fe;
+};
+
 void Weapon::pickup(Hero& hero) {
     hero.currWeapon = this;
 }
@@ -15,6 +29,12 @@ Item* Weapon::dropItem(Hero& hero) {
     return dropped;
 }
 
+// -- Armour --
+    Armour::Armour(Texture *large, Texture *small, Rect d, float r, float hu) : Item(large, small, d){
+        resistance = r;
+        healthUpgrade = hu;
+    };
+
 void Armour::pickup(Hero& hero) {
     hero.currArmour = this;
 }
@@ -28,6 +48,17 @@ Item* Armour::dropItem(Hero& hero) {
     hero.currArmour = nullptr;
     return dropped;
 }
+
+// -- Upgrade --
+Upgrade::Upgrade(Texture *large, Texture *small, Rect d, UpgradeType t, float cds, float v) : Item(large, small, d) {
+    //timer
+    cooldown  = (Timer*)calloc(1, sizeof(Timer));
+    activateTimer(cooldown, cds, true, true);
+
+    //type and value
+    type = t;
+    value = v;
+};
 
 void Upgrade::pickup(Hero& hero) {
     hero.currUpgrade = this;

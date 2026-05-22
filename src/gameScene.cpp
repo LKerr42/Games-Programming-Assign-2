@@ -33,10 +33,10 @@ namespace GameScene {
         //init items
         openItemImages();
         
-        hero.currWeapon = new Weapon(&weapons[0], &weapons[3], (Rect){0, 0, 0, 0}, 100, 100, 100);
+        hero.currWeapon = new Weapon(&weapons[0], &weapons[3], (Rect){0, 0, 0, 0}, 1.0f, 1.0f, 100);
 
         levelItems.push_back(new Armour(&armours[0], &armours[3], (Rect){640, halfWindowHeight, 0, 0}, 100, 100));
-        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, halfWindowHeight, 0, 0}, 100, 100, 100));
+        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, halfWindowHeight, 0, 0}, 0.25f, 2.0f, 100));
 
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
@@ -90,11 +90,22 @@ namespace GameScene {
         }
 
         //update lasers
-        if (keyIsPressed(KEY_R)) hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
+        if (keyIsPressed(KEY_R)) {
+            hero.currWeapon->reloadTimer->active = true;
+        }
 
-        if (mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT) && hero.currWeapon->currEnergy > 0) {
+        if (updateTimer(hero.currWeapon->reloadTimer, dt)) {
+            hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
+            hero.currWeapon->reloadTimer->active = false;
+        }
+
+        bool canFire = updateTimer(hero.currWeapon->fireTimer, dt);
+        if (mouseButtonIsPressed(MOUSE_BUTTON_LEFT) 
+                && hero.currWeapon->currEnergy > 0 
+                && canFire) {
             lasers.emplace_back();
             hero.currWeapon->currEnergy -= 10;
+            resetTimer(hero.currWeapon->fireTimer);
         }
 
         for (int i = 0; i < lasers.size();) {
