@@ -7,6 +7,9 @@ namespace GameScene {
     Texture hudBase;
     Rect hudDest;
     Hero hero;
+    DisplayElement pausedElement;
+
+    DisplayElement currentDisplayElement;
 
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
@@ -54,98 +57,115 @@ namespace GameScene {
         walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
+
+        //init display elements
+        pausedElement = (DisplayElement){
+            "Paused",
+            loadTexture("./assets/images/paused_splash.png")
+        };
     }
 
     void update(float dt) {
-        //move hero
-        if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -3));
-        if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-3, 0));
-        if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, 3));
-        if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(3, 0));
+        if (currentDisplay == HUD) {
+            //check for display updates
+            if (keyPressedThisFrame(KEY_ESCAPE)) {
+                currentDisplay = ELEMENT;
+                currentDisplayElement = pausedElement;
+            }
 
-        hero.transform.rotateTo(mousePosition());
-        hero.transform.updateBoundingBox();
+            //move hero
+            if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -3));
+            if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-3, 0));
+            if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, 3));
+            if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(3, 0));
 
-        //Detect collision, and then calculate overlap to push back hero
-        for (Wall W : walls) {
-            if (collision(hero.transform.getBoundingBox(), 0.0f, W.rect, 0.0f)) {
-                Rect heroBox = hero.transform.getBoundingBox();
-                float left = (heroBox.x + heroBox.width) - W.rect.x;
-                float right = (W.rect.x +  W.rect.width) - heroBox.x;
-                float top = (heroBox.y + heroBox.height) - W.rect.y;
-                float bottom = (W.rect.y +  W.rect.height) - heroBox.y;
+            hero.transform.rotateTo(mousePosition());
+            hero.transform.updateBoundingBox();
 
-                float minOverlap = min(min(left, right), min(top, bottom));
+            //Detect collision, and then calculate overlap to push back hero
+            for (Wall W : walls) {
+                if (collision(hero.transform.getBoundingBox(), 0.0f, W.rect, 0.0f)) {
+                    Rect heroBox = hero.transform.getBoundingBox();
+                    float left = (heroBox.x + heroBox.width) - W.rect.x;
+                    float right = (W.rect.x +  W.rect.width) - heroBox.x;
+                    float top = (heroBox.y + heroBox.height) - W.rect.y;
+                    float bottom = (W.rect.y +  W.rect.height) - heroBox.y;
 
-                if (minOverlap == left) {
-                    hero.transform.translate(Vec2(-left, 0));
-                } else if (minOverlap == right) {
-                    hero.transform.translate(Vec2(right, 0));
-                } else if (minOverlap == top) {
-                    hero.transform.translate(Vec2(0, -top));
-                } else if (minOverlap == bottom) {
-                    hero.transform.translate(Vec2(0, bottom));
+                    float minOverlap = min(min(left, right), min(top, bottom));
+
+                    if (minOverlap == left) {
+                        hero.transform.translate(Vec2(-left, 0));
+                    } else if (minOverlap == right) {
+                        hero.transform.translate(Vec2(right, 0));
+                    } else if (minOverlap == top) {
+                        hero.transform.translate(Vec2(0, -top));
+                    } else if (minOverlap == bottom) {
+                        hero.transform.translate(Vec2(0, bottom));
+                    }
                 }
             }
-        }
 
-        //update lasers
-        if (keyIsPressed(KEY_R)) {
-            hero.currWeapon->reloadTimer->active = true;
-        }
-
-        if (updateTimer(hero.currWeapon->reloadTimer, dt)) {
-            hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
-            hero.currWeapon->reloadTimer->active = false;
-        }
-
-        bool canFire = updateTimer(hero.currWeapon->fireTimer, dt);
-        if (mouseButtonIsPressed(MOUSE_BUTTON_LEFT) 
-                && hero.currWeapon->currEnergy > 0 
-                && canFire) {
-            lasers.emplace_back();
-            hero.currWeapon->currEnergy -= 10;
-            resetTimer(hero.currWeapon->fireTimer);
-        }
-
-        for (int i = 0; i < lasers.size();) {
-            Laser &L = lasers.at(i);
-
-            L.transform.translateByAngle(L.speed * dt);
-
-            if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
-                L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
-                lasers.erase(lasers.begin() + i);
-            } else {
-                i++;
+            //update lasers
+            if (keyIsPressed(KEY_R)) {
+                hero.currWeapon->reloadTimer->active = true;
             }
-        }
 
-        //check contact with items
-        int ammountColls = 0;
-        for (auto item = levelItems.begin(); item != levelItems.end(); ) {
-            if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
-                    Vec2((*item)->dst.x, (*item)->dst.y), Vec2((*item)->dst.width, (*item)->dst.height))) {
-                currDialogue = "'E' to grab";
-                displayingDialogue = true;
-                ammountColls++;
+            if (updateTimer(hero.currWeapon->reloadTimer, dt)) {
+                hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
+                hero.currWeapon->reloadTimer->active = false;
+            }
 
-                if (keyPressedThisFrame(KEY_E)){
-                    Item *dropped = (*item)->dropItem(hero);
-                    if (dropped != nullptr) levelItems.push_back(dropped);
-                    (*item)->pickup(hero);
-                    item = levelItems.erase(item);
-                    break;
+            bool canFire = updateTimer(hero.currWeapon->fireTimer, dt);
+            if (mouseButtonIsPressed(MOUSE_BUTTON_LEFT) 
+                    && hero.currWeapon->currEnergy > 0 
+                    && canFire) {
+                lasers.emplace_back();
+                hero.currWeapon->currEnergy -= 10;
+                resetTimer(hero.currWeapon->fireTimer);
+            }
+
+            for (int i = 0; i < lasers.size();) {
+                Laser &L = lasers.at(i);
+
+                L.transform.translateByAngle(L.speed * dt);
+
+                if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
+                    L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
+                    lasers.erase(lasers.begin() + i);
+                } else {
+                    i++;
+                }
+            }
+
+            //check contact with items
+            int ammountColls = 0;
+            for (auto item = levelItems.begin(); item != levelItems.end(); ) {
+                if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
+                        Vec2((*item)->dst.x, (*item)->dst.y), Vec2((*item)->dst.width, (*item)->dst.height))) {
+                    currDialogue = "'E' to grab";
+                    displayingDialogue = true;
+                    ammountColls++;
+
+                    if (keyPressedThisFrame(KEY_E)){
+                        Item *dropped = (*item)->dropItem(hero);
+                        if (dropped != nullptr) levelItems.push_back(dropped);
+                        (*item)->pickup(hero);
+                        item = levelItems.erase(item);
+                        break;
+                    } else {
+                        ++item;
+                    }
                 } else {
                     ++item;
                 }
-            } else {
-                ++item;
             }
-        }
-        if (ammountColls == 0) displayingDialogue = false;
+            if (ammountColls == 0) displayingDialogue = false;
 
-        //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
+            //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
+        } else {
+            //check for display updates
+            if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
+        }
     }
 
     void render(float lag) {
@@ -199,7 +219,17 @@ namespace GameScene {
             if (hero.currArmour != nullptr) drawTexture(*hero.currArmour->smallTexture, (Rect){24, 32*HUD_PIXEL_SIZE, 40, 40});
             if (hero.currUpgrade != nullptr) drawTexture(*hero.currUpgrade->smallTexture, (Rect){24, 40*HUD_PIXEL_SIZE, 40, 40});
         } else {
+            float sizeX, sizeY;
+            SDL_GetTextureSize(currentDisplayElement.mainTexture.texture, &sizeX, &sizeY);
+            Vec2 displayTexturesize = Vec2(sizeX, sizeY);
+            Vec2 displayTexturePos = Vec2(
+                WINDOW_WIDTH/2 - sizeX/2,
+                WINDOW_HEIGHT/2 - sizeY/2
+            );
+
             fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), (Color){0, 0, 0, 128});
+            drawText(Vec2(0, 0), "Paused", Color::white, pressStart, 15);
+            drawTexture(currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
         }
     }
 

@@ -29,6 +29,11 @@ namespace GameScene {
         Texture activeTex, inactiveTex;
     } Wall;
 
+    typedef struct DisplayElement {
+        char* dialogue;
+        Texture mainTexture;
+    } DisplayElement;
+
     enum Level {
         LEVEL_ONE,
         LEVEL_TWO,
