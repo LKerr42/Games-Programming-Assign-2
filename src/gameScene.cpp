@@ -6,7 +6,9 @@ namespace GameScene {
     Font pressStart;
     Texture hudBase;
     Rect hudDest;
+
     Hero hero;
+
     DisplayElement pausedElement;
     Button displayElementExit;
 
@@ -21,7 +23,9 @@ namespace GameScene {
 
     Level currentLevel = LEVEL_ONE;
     DisplayState currentDisplay = HUD;
-    Texture weapons[6], armours[6], upgrades[6], background;
+    Texture smallWeapons[3], smallArmour[3], smallUpgrades[3], background;
+    Animation armourAnimation;
+    Animation weaponAnimation;
 
     const float halfWindowHeight = WINDOW_HEIGHT / 2.0f;
 
@@ -36,10 +40,10 @@ namespace GameScene {
         //init items
         openItemImages();
         
-        hero.currWeapon = new Weapon(&weapons[0], &weapons[3], (Rect){0, 0, 0, 0}, 1.0f, 1.0f, 100);
+        hero.currWeapon = new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){0, 0, 0, 0}, 1.0f, 1.0f, 100);
 
-        levelItems.push_back(new Armour(&armours[0], &armours[3], (Rect){640, halfWindowHeight, 0, 0}, 100, 100));
-        levelItems.push_back(new Weapon(&weapons[0], &weapons[3], (Rect){700, halfWindowHeight, 0, 0}, 0.25f, 2.0f, 100));
+        levelItems.push_back(new Armour(&armourAnimation, &smallArmour[0], (Rect){640, halfWindowHeight, 0, 0}, 100, 100));
+        levelItems.push_back(new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){700, halfWindowHeight, 0, 0}, 0.25f, 2.0f, 100));
 
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
@@ -192,6 +196,8 @@ namespace GameScene {
 
         //drawText(Vec2(10, 10), "Gaming time", (Color){219, 0, 172, 255}, pressStart, 24);
 
+        float current = getTimeInSeconds();
+
         drawTexture(background, Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         //hero
@@ -206,6 +212,7 @@ namespace GameScene {
 
         //lasers
         for (Laser &L : lasers) {
+            //drawTexture(lazer, L.transform.getPosition(), L.transform.getSize(), L.transform.getAngle());
             fillRect(L.transform.getPosition(), L.transform.getSize(), Color::green, L.transform.getAngle());
         }
 
@@ -216,7 +223,8 @@ namespace GameScene {
 
         //display items
         for (Item* item : levelItems) {
-            drawTexture(*item->largeTexture, item->dst);
+            int indx = getAnimationIndex(item->animationLarge, current);
+            drawTexture(item->animationLarge->frames.at(indx), item->dst);
         }
 
         //overlay display
@@ -259,23 +267,18 @@ namespace GameScene {
     }
 
     void openItemImages() {
-        //large
-        weapons[0] = loadTexture("./assets/images/items/weapon_large_01.png");
-        weapons[1] = loadTexture("./assets/images/items/weapon_large_01.png");
-        weapons[2] = loadTexture("./assets/images/items/weapon_large_01.png");
+        //inventory textures
+        smallWeapons[0] = loadTexture("./assets/images/items/weapon_small_01.png");
+        smallWeapons[1] = loadTexture("./assets/images/items/weapon_small_01.png");
+        smallWeapons[2] = loadTexture("./assets/images/items/weapon_small_01.png");
 
-        armours[0] = loadTexture("./assets/images/items/armour_large_01.png");
-        armours[1] = loadTexture("./assets/images/items/armour_large_01.png");
-        armours[2] = loadTexture("./assets/images/items/armour_large_01.png");
+        smallArmour[0] = loadTexture("./assets/images/items/armour_small_01.png");
+        smallArmour[1] = loadTexture("./assets/images/items/armour_small_01.png");
+        smallArmour[2] = loadTexture("./assets/images/items/armour_small_01.png");
 
-        //small
-        weapons[3] = loadTexture("./assets/images/items/weapon_small_01.png");
-        weapons[4] = loadTexture("./assets/images/items/weapon_small_01.png");
-        weapons[5] = loadTexture("./assets/images/items/weapon_small_01.png");
-
-        armours[3] = loadTexture("./assets/images/items/armour_small_01.png");
-        armours[4] = loadTexture("./assets/images/items/armour_small_01.png");
-        armours[5] = loadTexture("./assets/images/items/armour_small_01.png");
+        //on ground animations
+        armourAnimation = loadAnimation("./assets/images/items/armour_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
+        weaponAnimation = loadAnimation("./assets/images/items/weapon_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
     }
 
     void displayDialogue(const char *msg) {

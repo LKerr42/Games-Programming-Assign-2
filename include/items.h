@@ -16,10 +16,11 @@ enum UpgradeType {
 
 class Item {
     public:
-        Texture *largeTexture, *smallTexture;
+        Texture *smallTexture;
+        Animation *animationLarge;
         Rect dst;
 
-        Item(Texture *large, Texture *small, Rect d) : largeTexture(large), smallTexture(small), dst(d) {
+        Item(Animation *largeA, Texture *small, Rect d) : animationLarge(largeA), smallTexture(small), dst(d) {
             dst.width = dst.height = 40;
         };
 
@@ -33,7 +34,7 @@ class Weapon : public Item {
         float currEnergy, fullEnergy;
         Timer *fireTimer, *reloadTimer;
 
-        Weapon(Texture *large, Texture *small, Rect d, float fs, float rs, float fe);
+        Weapon(Animation *largeA, Texture *small, Rect d, float fs, float rs, float fe);
 
         void pickup(Hero& hero) override;
         Item* dropItem(Hero& hero) override;
@@ -43,7 +44,7 @@ class Armour : public Item {
     public:
         float resistance, healthUpgrade;
 
-        Armour(Texture *large, Texture *small, Rect d, float r, float hu);
+        Armour(Animation *largeA, Texture *small, Rect d, float r, float hu);
 
         void pickup(Hero& hero) override;
         Item* dropItem(Hero& hero) override;
@@ -55,7 +56,7 @@ class Upgrade : public Item {
         Timer *cooldown;
         float value;
 
-        Upgrade(Texture *large, Texture *small, Rect d, UpgradeType t, float cds, float v);
+        Upgrade(Animation *largeA, Texture *small, Rect d, UpgradeType t, float cds, float v);
 
         void pickup(Hero& hero) override;
         Item* dropItem(Hero& hero) override;

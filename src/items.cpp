@@ -2,7 +2,8 @@
 #include <hero.h>
 
 // -- Weapon --
-Weapon::Weapon(Texture *large, Texture *small, Rect d, float fs, float rs, float fe) : Item(large, small, d) {
+Weapon::Weapon(Animation *largeA, Texture *small, Rect d, float fs, float rs, float fe) 
+        : Item(largeA, small, d) {
     //timers
     fireTimer = (Timer*)calloc(1, sizeof(Timer));
     activateTimer(fireTimer, fs, true, true);
@@ -30,10 +31,13 @@ Item* Weapon::dropItem(Hero& hero) {
 }
 
 // -- Armour --
-    Armour::Armour(Texture *large, Texture *small, Rect d, float r, float hu) : Item(large, small, d){
-        resistance = r;
-        healthUpgrade = hu;
-    };
+Armour::Armour(Animation *largeA, Texture *small, Rect d, float r, float hu) 
+        : Item(largeA, small, d){
+    resistance = r;
+    healthUpgrade = hu;
+
+    this->animationLarge = animationLarge;
+};
 
 void Armour::pickup(Hero& hero) {
     hero.currArmour = this;
@@ -50,7 +54,8 @@ Item* Armour::dropItem(Hero& hero) {
 }
 
 // -- Upgrade --
-Upgrade::Upgrade(Texture *large, Texture *small, Rect d, UpgradeType t, float cds, float v) : Item(large, small, d) {
+Upgrade::Upgrade(Animation *largeA, Texture *small, Rect d, UpgradeType t, float cds, float v)
+        : Item(largeA, small, d) {
     //timer
     cooldown  = (Timer*)calloc(1, sizeof(Timer));
     activateTimer(cooldown, cds, true, true);
