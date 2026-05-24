@@ -8,6 +8,7 @@ namespace GameScene {
     Rect hudDest;
     Hero hero;
     DisplayElement pausedElement;
+    Button displayElementExit;
 
     DisplayElement currentDisplayElement;
 
@@ -31,7 +32,6 @@ namespace GameScene {
 
         //init hero
         hero.tex = loadTexture("./assets/images/hero.png");
-        SDL_SetTextureScaleMode(hero.tex.texture, SDL_SCALEMODE_NEAREST);
 
         //init items
         openItemImages();
@@ -45,7 +45,6 @@ namespace GameScene {
         hudBase = loadTexture("./assets/images/hud_base.png");
         float hudWidth = 128 * 8, hudHeight = 72 * 8;
         hudDest = (Rect){0, 0, hudWidth, hudHeight};
-        SDL_SetTextureScaleMode(hudBase.texture, SDL_SCALEMODE_NEAREST);
 
         //init level
         walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, 0, 300, 200}, true, NULL, NULL});
@@ -59,10 +58,18 @@ namespace GameScene {
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
 
         //init display elements
+        static Texture pausedTex = loadTexture("./assets/images/paused_splash.png");
+        Texture buttonBackground = loadTexture("./assets/images/button_pink.png");
+
         pausedElement = (DisplayElement){
             "Paused",
-            loadTexture("./assets/images/paused_splash.png")
+            20,
+            &pausedTex
         };
+
+        displayElementExit = createButton(
+            Vec2(WINDOW_WIDTH - 70, WINDOW_HEIGHT - 40), Vec2(10, 10), "Exit", pressStart, 20.0f, Color::black, Color::white, QUIT, buttonBackground
+        );
     }
 
     void update(float dt) {
@@ -165,6 +172,18 @@ namespace GameScene {
         } else {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
+
+            //run button
+            if(collision(mousePosition(), displayElementExit.position, displayElementExit.size)) {
+                displayElementExit.hovered = true;
+
+                // Mouse Click
+                if(mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) {
+                    currentDisplay = HUD;
+                }
+            } else {
+                displayElementExit.hovered = false;
+            }
         }
     }
 
@@ -220,16 +239,18 @@ namespace GameScene {
             if (hero.currUpgrade != nullptr) drawTexture(*hero.currUpgrade->smallTexture, (Rect){24, 40*HUD_PIXEL_SIZE, 40, 40});
         } else {
             float sizeX, sizeY;
-            SDL_GetTextureSize(currentDisplayElement.mainTexture.texture, &sizeX, &sizeY);
+            SDL_GetTextureSize(currentDisplayElement.mainTexture->texture, &sizeX, &sizeY);
             Vec2 displayTexturesize = Vec2(sizeX, sizeY);
             Vec2 displayTexturePos = Vec2(
                 WINDOW_WIDTH/2 - sizeX/2,
                 WINDOW_HEIGHT/2 - sizeY/2
             );
 
-            fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), (Color){0, 0, 0, 128});
-            drawText(Vec2(0, 0), "Paused", Color::white, pressStart, 15);
-            drawTexture(currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
+            fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
+            drawText(Vec2(0, 0), "Paused", Color::white, pressStart, currentDisplayElement.fontSize);
+            drawTexture(*currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
+
+            renderButton(displayElementExit);
         }
     }
 
@@ -239,26 +260,22 @@ namespace GameScene {
 
     void openItemImages() {
         //large
-        weapons[0] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[1] = loadTexture("./assets/images/weapon_large_01.png");
-        weapons[2] = loadTexture("./assets/images/weapon_large_01.png");
+        weapons[0] = loadTexture("./assets/images/items/weapon_large_01.png");
+        weapons[1] = loadTexture("./assets/images/items/weapon_large_01.png");
+        weapons[2] = loadTexture("./assets/images/items/weapon_large_01.png");
 
-        armours[0] = loadTexture("./assets/images/armour_large_01.png");
-        armours[1] = loadTexture("./assets/images/armour_large_01.png");
-        armours[2] = loadTexture("./assets/images/armour_large_01.png");
+        armours[0] = loadTexture("./assets/images/items/armour_large_01.png");
+        armours[1] = loadTexture("./assets/images/items/armour_large_01.png");
+        armours[2] = loadTexture("./assets/images/items/armour_large_01.png");
 
         //small
-        weapons[3] = loadTexture("./assets/images/weapon_small_01.png");
-        weapons[4] = loadTexture("./assets/images/weapon_small_01.png");
-        weapons[5] = loadTexture("./assets/images/weapon_small_01.png");
+        weapons[3] = loadTexture("./assets/images/items/weapon_small_01.png");
+        weapons[4] = loadTexture("./assets/images/items/weapon_small_01.png");
+        weapons[5] = loadTexture("./assets/images/items/weapon_small_01.png");
 
-        armours[3] = loadTexture("./assets/images/armour_small_01.png");
-        armours[4] = loadTexture("./assets/images/armour_small_01.png");
-        armours[5] = loadTexture("./assets/images/armour_small_01.png");
-        for (int i = 0; i < 6; i++) {
-            SDL_SetTextureScaleMode(weapons[i].texture, SDL_SCALEMODE_NEAREST);
-            SDL_SetTextureScaleMode(armours[i].texture, SDL_SCALEMODE_NEAREST);
-        }
+        armours[3] = loadTexture("./assets/images/items/armour_small_01.png");
+        armours[4] = loadTexture("./assets/images/items/armour_small_01.png");
+        armours[5] = loadTexture("./assets/images/items/armour_small_01.png");
     }
 
     void displayDialogue(const char *msg) {

@@ -65,6 +65,14 @@ void clear(Uint8 r, Uint8 g, Uint8 b) {
     clear({r,g,b});
 }
 
+// setup draw mode
+void setupRendererBlendDrawMode() {
+    if (!SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND)) {
+        SDL_Log("Set Render Draw Blend Mode error: %s", SDL_GetError());
+    }
+    
+}
+
 // ----------------------------------------
 // Draw Primitives
 // ----------------------------------------
@@ -142,6 +150,8 @@ void drawRect(Rect rectangle, Color color, float angle) {
 
 // Fill Rectangle
 void fillRect(float x, float y, float width, float height, Uint8 r, Uint8 g, Uint8 b, Uint8 a, float angle) {
+    if (a != 255) setupRendererBlendDrawMode();
+     
     if(angle == 0.0) {
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
         
@@ -630,6 +640,9 @@ Texture loadTexture(const char *path, bool clear) {
         SDL_Log("Couldn't create static texture: %s", SDL_GetError());
         exit(1);
     }
+
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+
 
     // Clean up surface
     SDL_DestroySurface(surface);

@@ -8,7 +8,7 @@ Weapon::Weapon(Texture *large, Texture *small, Rect d, float fs, float rs, float
     activateTimer(fireTimer, fs, true, true);
 
     reloadTimer = (Timer*)calloc(1, sizeof(Timer));
-    activateTimer(reloadTimer, rs, false, true);
+    activateTimer(reloadTimer, rs, false, false);
 
     //energy
     currEnergy = fe;

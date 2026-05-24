@@ -52,6 +52,9 @@ struct Vertex {
     float tx,ty;
 };
 
+//setup
+void setupRendererBlendDrawMode();
+
 // Clear
 void clear(Uint8 r, Uint8 g, Uint8 b);
 void clear(Color color);

@@ -28,7 +28,6 @@ void loadScene(Scene scene) {
 
 // Initialise (called once at start)
 void init() {
-    // Example
     currentScene = MENU;
 
     MenuScene::init();

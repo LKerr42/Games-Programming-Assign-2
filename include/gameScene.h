@@ -31,7 +31,8 @@ namespace GameScene {
 
     typedef struct DisplayElement {
         char* dialogue;
-        Texture mainTexture;
+        int fontSize;
+        Texture* mainTexture;
     } DisplayElement;
 
     enum Level {
