@@ -41,7 +41,7 @@ namespace GameScene {
         LEVEL_THREE
     };
 
-    enum DisplayState {
+    enum DisplayState : int {
         HUD,
         ELEMENT
     };
@@ -53,6 +53,9 @@ namespace GameScene {
 
     void openItemImages();
     void displayDialogue(const char *msg);
+    void setupShadows();
+    void smoothShadows();
+    void handleCollision(Rect collidingWith);
 }
 
 #endif

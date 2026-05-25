@@ -4,15 +4,18 @@
 
 namespace GameScene {
     Font pressStart;
-    Texture hudBase;
-    Rect hudDest;
 
     Hero hero;
 
     DisplayElement pausedElement;
-    Button displayElementExit;
+    DisplayElement letterElement;
 
+    Texture hudBase;
+    Rect hudDest;
+    Button displayElementExit;
     DisplayElement currentDisplayElement;
+    
+    int shadows[36][64];
 
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
@@ -26,8 +29,10 @@ namespace GameScene {
     Texture smallWeapons[3], smallArmour[3], smallUpgrades[3], background;
     Animation armourAnimation;
     Animation weaponAnimation;
+    Animation letterAnimation;
 
     const float halfWindowHeight = WINDOW_HEIGHT / 2.0f;
+    const int windowWidthShadows = SDL_round(WINDOW_WIDTH/20), windowHeightShadows = SDL_round(WINDOW_HEIGHT/20);
 
     void init() {
         setWindowTitle("Pest Control - Playing");
@@ -39,11 +44,19 @@ namespace GameScene {
 
         //init items
         openItemImages();
-        
-        hero.currWeapon = new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){0, 0, 0, 0}, 1.0f, 1.0f, 100);
 
-        levelItems.push_back(new Armour(&armourAnimation, &smallArmour[0], (Rect){640, halfWindowHeight, 0, 0}, 100, 100));
-        levelItems.push_back(new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){700, halfWindowHeight, 0, 0}, 0.25f, 2.0f, 100));
+        static Texture letterLarge = loadTexture("./assets/images/letter_large.png");
+        letterElement = (DisplayElement){
+            "Hmm... seems to be left here by the crew",
+            25,
+            &letterLarge
+        };
+        
+        hero.currWeapon = new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){0, 0, 0, 0}, "'E' to grab", 1.0f, 1.0f, 100);
+
+        levelItems.push_back(new Armour(&armourAnimation, &smallArmour[0], (Rect){640, halfWindowHeight, 0, 0}, "'E' to grab", 100, 100));
+        levelItems.push_back(new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){700, halfWindowHeight, 0, 0}, "'E' to grab", 0.25f, 2.0f, 100));
+        levelItems.push_back(new Element(&letterAnimation, (Rect){300, halfWindowHeight, 0, 0}, "'E' to read", &letterElement));
 
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
@@ -60,6 +73,8 @@ namespace GameScene {
         walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
+
+        setupShadows();
 
         //init display elements
         static Texture pausedTex = loadTexture("./assets/images/paused_splash.png");
@@ -96,24 +111,22 @@ namespace GameScene {
             //Detect collision, and then calculate overlap to push back hero
             for (Wall W : walls) {
                 if (collision(hero.transform.getBoundingBox(), 0.0f, W.rect, 0.0f)) {
-                    Rect heroBox = hero.transform.getBoundingBox();
-                    float left = (heroBox.x + heroBox.width) - W.rect.x;
-                    float right = (W.rect.x +  W.rect.width) - heroBox.x;
-                    float top = (heroBox.y + heroBox.height) - W.rect.y;
-                    float bottom = (W.rect.y +  W.rect.height) - heroBox.y;
-
-                    float minOverlap = min(min(left, right), min(top, bottom));
-
-                    if (minOverlap == left) {
-                        hero.transform.translate(Vec2(-left, 0));
-                    } else if (minOverlap == right) {
-                        hero.transform.translate(Vec2(right, 0));
-                    } else if (minOverlap == top) {
-                        hero.transform.translate(Vec2(0, -top));
-                    } else if (minOverlap == bottom) {
-                        hero.transform.translate(Vec2(0, bottom));
-                    }
+                    handleCollision(W.rect);
                 }
+            }
+
+            //check out of bounds
+            Rect box = hero.transform.getBoundingBox();
+            if (box.x < 0) hero.transform.translate(Vec2(-box.x, 0));
+
+            if (box.y < 0) hero.transform.translate(Vec2(0, -box.y));
+
+            if (box.x + box.width > WINDOW_WIDTH) {
+                hero.transform.translate(Vec2(WINDOW_WIDTH - (box.x + box.width), 0));
+            }
+
+            if (box.y + box.height > WINDOW_HEIGHT) {
+                hero.transform.translate(Vec2(0, WINDOW_HEIGHT - (box.y + box.height)));
             }
 
             //update lasers
@@ -153,14 +166,14 @@ namespace GameScene {
             for (auto item = levelItems.begin(); item != levelItems.end(); ) {
                 if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
                         Vec2((*item)->dst.x, (*item)->dst.y), Vec2((*item)->dst.width, (*item)->dst.height))) {
-                    currDialogue = "'E' to grab";
+                    currDialogue = (*item)->hoverDialogue;
                     displayingDialogue = true;
                     ammountColls++;
 
                     if (keyPressedThisFrame(KEY_E)){
                         Item *dropped = (*item)->dropItem(hero);
                         if (dropped != nullptr) levelItems.push_back(dropped);
-                        (*item)->pickup(hero);
+                        (*item)->pickup(hero, &currentDisplay, &currentDisplayElement);
                         item = levelItems.erase(item);
                         break;
                     } else {
@@ -173,6 +186,33 @@ namespace GameScene {
             if (ammountColls == 0) displayingDialogue = false;
 
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
+
+
+            //check updates to shadows
+            int sightRadShadows = SDL_round(hero.sightRad / 20);
+            //int sightDiamShadows = sightRadShadows << 1;
+            Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
+
+            for (int i = HeroPosShadows.y - sightRadShadows; i < HeroPosShadows.y + sightRadShadows; i++) {
+                for (int j = HeroPosShadows.x - sightRadShadows; j < HeroPosShadows.x + sightRadShadows + 2; j++) {
+                    if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
+                        continue;
+                    }
+                    if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
+                            Vec2(j*20, i*20), Vec2(20, 20))) {
+                        shadows[i][j] = 0;
+                    }
+                }
+            }
+
+            // if (keyIsPressed(KEY_V)) {
+            //     std::cout << "R: " << sightRadShadows << "\n";
+            //     std::cout << "HPS: (" << HeroPosShadows.x << ", " << HeroPosShadows.y << ")\n";
+
+            //     std::cout << "i = " << HeroPosShadows.y - sightRadShadows << "; i < " << sightDiamShadows << "\n";
+            //     std::cout << "j = " << HeroPosShadows.x - sightRadShadows << "; j < " << sightDiamShadows << "\n";
+            // }
+
         } else {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
@@ -201,9 +241,6 @@ namespace GameScene {
         drawTexture(background, Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 
         //hero
-        drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
-        drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
-        drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
         drawTexture(hero.tex, hero.transform.getPosition(), hero.transform.getSize(), hero.transform.getAngle());
 
         if (displayingDialogue) {
@@ -226,6 +263,33 @@ namespace GameScene {
             int indx = getAnimationIndex(item->animationLarge, current);
             drawTexture(item->animationLarge->frames.at(indx), item->dst);
         }
+
+        //Shadows
+        for (int i = 0; i < 36; i++) {
+            for (int j = 0; j < 64; j++) {
+                Color currCol;
+                if (shadows[i][j] != 0) {
+                    if (shadows[i][j] == 1) {
+                        currCol = (Color){37, 37, 75};
+                    } else if (shadows[i][j] == 2) {
+                        currCol = (Color){25, 25, 50};
+                    } else if (shadows[i][j] == 3) {
+                        currCol = (Color){12, 12, 25};
+                    } else if (shadows[i][j] == 4) {
+                        currCol = (Color){7, 7, 15};
+                    } else {
+                        currCol = (Color){2, 2, 5};
+                    }
+                    fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
+                }
+            }
+        }
+
+        //debug 
+        // -- TODO: remove before submition --
+        drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
+        drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
+        drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
 
         //overlay display
         if (currentDisplay == HUD) {
@@ -255,7 +319,7 @@ namespace GameScene {
             );
 
             fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
-            drawText(Vec2(0, 0), "Paused", Color::white, pressStart, currentDisplayElement.fontSize);
+            drawText(Vec2(0, 0), currentDisplayElement.dialogue, Color::white, pressStart, currentDisplayElement.fontSize);
             drawTexture(*currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
 
             renderButton(displayElementExit);
@@ -279,6 +343,7 @@ namespace GameScene {
         //on ground animations
         armourAnimation = loadAnimation("./assets/images/items/armour_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
         weaponAnimation = loadAnimation("./assets/images/items/weapon_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
+        letterAnimation = loadAnimation("./assets/images/items/letter_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
     }
 
     void displayDialogue(const char *msg) {
@@ -286,6 +351,66 @@ namespace GameScene {
         Vec2 msgSize = measureText(msg, pressStart, 14);
         Vec2 pos = Vec2(heroPos.x - (msgSize.x/2), heroPos.y - 30);
         drawText(pos, msg, Color::white, pressStart, 14, 0.0f);
+    }
+
+    void setupShadows() {
+        for (int i = 0; i < 36; i++) {
+            for (int j = 0; j < 64; j++) {
+                shadows[i][j] = SDL_rand(5) + 1;
+            }
+        }
+
+        for (int i = 0; i < 1; i++) {
+            smoothShadows();
+        }
+    }
+
+    void smoothShadows() {
+        int temp[36][64];
+
+        for (int y = 1; y < 35; y++) {
+            for (int x = 1; x < 63; x++) {
+
+                int total = 0;
+                int count = 0;
+
+                for (int oy = -1; oy <= 1; oy++) {
+                    for (int ox = -1; ox <= 1; ox++) {
+
+                        total += shadows[y + oy][x + ox];
+                        count++;
+                    }
+                }
+
+                temp[y][x] = total / count;
+            }
+        }
+
+        for (int y = 1; y < 35; y++) {
+            for (int x = 1; x < 63; x++) {
+                shadows[y][x] = temp[y][x];
+            }
+        }
+    }
+
+    void handleCollision(Rect collidingWith) {
+        Rect heroBox = hero.transform.getBoundingBox();
+        float left = (heroBox.x + heroBox.width) - collidingWith.x;
+        float right = (collidingWith.x +  collidingWith.width) - heroBox.x;
+        float top = (heroBox.y + heroBox.height) - collidingWith.y;
+        float bottom = (collidingWith.y +  collidingWith.height) - heroBox.y;
+
+        float minOverlap = min(min(left, right), min(top, bottom));
+
+        if (minOverlap == left) {
+            hero.transform.translate(Vec2(-left, 0));
+        } else if (minOverlap == right) {
+            hero.transform.translate(Vec2(right, 0));
+        } else if (minOverlap == top) {
+            hero.transform.translate(Vec2(0, -top));
+        } else if (minOverlap == bottom) {
+            hero.transform.translate(Vec2(0, bottom));
+        }
     }
 
     Laser::Laser() {
