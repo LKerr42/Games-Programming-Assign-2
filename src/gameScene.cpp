@@ -103,10 +103,10 @@ namespace GameScene {
 
         //addAlien(hatchlings, hatchlingTex);
         //hatchlings[0].transform.pos = Vec2(1000, halfWindowHeight);
-        //addAlien(matureAliens, matureTex);
-        //matureAliens[0].transform.pos = Vec2(1000, halfWindowHeight);
-        addAlien(spitters, hatchlingTex);
-        spitters[0].transform.pos = Vec2(1000, halfWindowHeight);
+        addAlien(matureAliens, matureTex);
+        matureAliens[0].transform.pos = Vec2(1000, halfWindowHeight);
+        //addAlien(spitters, hatchlingTex);
+        //spitters[0].transform.pos = Vec2(1000, halfWindowHeight);
         
 
 
@@ -222,9 +222,9 @@ namespace GameScene {
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
             //update aliens
-            fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
+            //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
             fsmAlien(matureAliens, hero, dt, current);
-            fsmAlien(spitters, hero, dt, current);
+            //fsmAlien(spitters, hero, dt, current);
 
             //check updates to shadows
             int sightRadShadows = SDL_round(hero.sightRad / 20);
