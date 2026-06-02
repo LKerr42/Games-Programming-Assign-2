@@ -5,7 +5,7 @@
 #include <iostream>
 
 // hatchling -----------------------------------------------------------------------------------------------------
-Alien* alienCollision(Vec2 pos, player &p1) {
+Alien* alienCollision(Vec2 pos, Hero &p1) {
     
 }
 
