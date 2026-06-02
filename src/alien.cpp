@@ -6,7 +6,7 @@
 
 // hatchling -----------------------------------------------------------------------------------------------------
 Alien* alienCollision(Vec2 pos, player &p1) {
-
+    
 }
 
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
