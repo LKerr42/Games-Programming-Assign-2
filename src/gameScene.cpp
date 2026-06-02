@@ -37,6 +37,7 @@ namespace GameScene {
 
     const float halfWindowHeight = WINDOW_HEIGHT / 2.0f;
     const int windowWidthShadows = SDL_round(WINDOW_WIDTH/20), windowHeightShadows = SDL_round(WINDOW_HEIGHT/20);
+    float current;
 
     void init() {
         setWindowTitle("Pest Control - Playing");
@@ -95,6 +96,8 @@ namespace GameScene {
         addAlien(horde, alien);
 
         horde[0].transform.pos = Vec2(halfWindowHeight, 1000);
+
+        current = getTimeInSeconds();
     }
 
     void update(float dt) {
@@ -208,6 +211,8 @@ namespace GameScene {
 
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
+            //update aliens
+            fsmAlien(horde, hero, dt, current);
 
             //check updates to shadows
             int sightRadShadows = SDL_round(hero.sightRad / 20);
@@ -248,7 +253,7 @@ namespace GameScene {
 
         //drawText(Vec2(10, 10), "Gaming time", (Color){219, 0, 172, 255}, pressStart, 24);
 
-        float current = getTimeInSeconds();
+        current = getTimeInSeconds();
 
         drawTexture(background, Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
 
@@ -289,26 +294,30 @@ namespace GameScene {
             }
         }
 
-        //Shadows
-        for (int i = 0; i < 36; i++) {
-            for (int j = 0; j < 64; j++) {
-                Color currCol;
-                if (shadows[i][j] != 0) {
-                    if (shadows[i][j] == 1) {
-                        currCol = (Color){37, 37, 75};
-                    } else if (shadows[i][j] == 2) {
-                        currCol = (Color){25, 25, 50};
-                    } else if (shadows[i][j] == 3) {
-                        currCol = (Color){12, 12, 25};
-                    } else if (shadows[i][j] == 4) {
-                        currCol = (Color){7, 7, 15};
-                    } else {
-                        currCol = (Color){2, 2, 5};
-                    }
-                    fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
-                }
-            }
+        for (Alien a : horde) {
+            drawAlien(a, a.active, current);
         }
+
+        //Shadows
+        // for (int i = 0; i < 36; i++) {
+        //     for (int j = 0; j < 64; j++) {
+        //         Color currCol;
+        //         if (shadows[i][j] != 0) {
+        //             if (shadows[i][j] == 1) {
+        //                 currCol = (Color){37, 37, 75};
+        //             } else if (shadows[i][j] == 2) {
+        //                 currCol = (Color){25, 25, 50};
+        //             } else if (shadows[i][j] == 3) {
+        //                 currCol = (Color){12, 12, 25};
+        //             } else if (shadows[i][j] == 4) {
+        //                 currCol = (Color){7, 7, 15};
+        //             } else {
+        //                 currCol = (Color){2, 2, 5};
+        //             }
+        //             fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
+        //         }
+        //     }
+        // }
 
         //debug 
         // -- TODO: remove before submition --

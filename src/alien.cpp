@@ -1,6 +1,6 @@
 #include <alien.h>
 #include <hero.h>
-#include <collision.h>
+#include <collisions.h>
 #include <vector>
 #include <iostream>
 
@@ -37,6 +37,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
     alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
+    alien.animate.start = getTimeInSeconds();
 
     Horde.push_back(alien);
     return true;
