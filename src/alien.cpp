@@ -36,7 +36,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
     alien.animate.frames.push_back(subTexture(spritesheet, {80, 40, 40, 40}));
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
     alien.animate.numFrames = 4;
-    alien.animate.duration = 0.5;
+    alien.animate.duration = 0.5f;
     alien.animate.start = getTimeInSeconds();
 
     Horde.push_back(alien);
@@ -112,13 +112,13 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
             Horde[i].state = ANGRY;
             
         }
@@ -190,7 +190,7 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
 
 // check if player has entered alien awareness
 bool awareOfPlayer(AlienAdult &alien, Hero &p1) {
-    if(distance(alien.transform.pos, p1.transform.pos) < p1.sightRad*2) {
+    if(distance(alien.transform.pos, p1.transform.pos) < p1.sightRad*3) {
         return true;
     } else {
         return false;
@@ -257,13 +257,13 @@ void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
             Horde[i].state = ANGRY;
             
         }
@@ -396,13 +396,13 @@ void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start) 
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
 
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
             Horde[i].state = ANGRY;
             
         }

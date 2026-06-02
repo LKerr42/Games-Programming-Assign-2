@@ -95,7 +95,7 @@ namespace GameScene {
 
         addAlien(horde, alien);
 
-        horde[0].transform.pos = Vec2(halfWindowHeight, 1000);
+        horde[0].transform.pos = Vec2(1000, halfWindowHeight);
 
         current = getTimeInSeconds();
     }
@@ -299,25 +299,25 @@ namespace GameScene {
         }
 
         //Shadows
-        // for (int i = 0; i < 36; i++) {
-        //     for (int j = 0; j < 64; j++) {
-        //         Color currCol;
-        //         if (shadows[i][j] != 0) {
-        //             if (shadows[i][j] == 1) {
-        //                 currCol = (Color){37, 37, 75};
-        //             } else if (shadows[i][j] == 2) {
-        //                 currCol = (Color){25, 25, 50};
-        //             } else if (shadows[i][j] == 3) {
-        //                 currCol = (Color){12, 12, 25};
-        //             } else if (shadows[i][j] == 4) {
-        //                 currCol = (Color){7, 7, 15};
-        //             } else {
-        //                 currCol = (Color){2, 2, 5};
-        //             }
-        //             fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
-        //         }
-        //     }
-        // }
+        for (int i = 0; i < 36; i++) {
+            for (int j = 0; j < 64; j++) {
+                Color currCol;
+                if (shadows[i][j] != 0) {
+                    if (shadows[i][j] == 1) {
+                        currCol = (Color){37, 37, 75};
+                    } else if (shadows[i][j] == 2) {
+                        currCol = (Color){25, 25, 50};
+                    } else if (shadows[i][j] == 3) {
+                        currCol = (Color){12, 12, 25};
+                    } else if (shadows[i][j] == 4) {
+                        currCol = (Color){7, 7, 15};
+                    } else {
+                        currCol = (Color){2, 2, 5};
+                    }
+                    fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
+                }
+            }
+        }
 
         //debug 
         // -- TODO: remove before submition --
