@@ -53,16 +53,6 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
     return false;
 }
 
-
-
-bool awareOfPlayer(Alien &alien, player &p1) {
-
-}
-
-Alien* nearestAwareAlien(Alien &alien) {
-
-}
-
 void chase(Alien &alien, player &p1, float dt) {
     Vec2 toPlayer = unit(p1.position - alien.transform.position());
 
@@ -200,11 +190,6 @@ bool awareOfPlayer(AlienAdult &alien, player &p1) {
     }
 }
 
-// check for any nearby aware aliens
-AlienAdult* nearestAwareAlien(AlienAdult &alien) {
-
-}
-
 // chase player
 void chase(AlienAdult &alien, player &p1, float dt) {  // , float r = 0
 
@@ -338,20 +323,6 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
     return false;
 }
 
-// check if player has entered alien awareness
-bool awareOfPlayer(AlienRanged &alien, player &p1) {
-    if(distance(alien.transform.localPosition, p1.position) < p1.outerRad) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// check for any nearby aware aliens
-AlienRanged* nearestAwareAlien(AlienRanged &alien) {
-
-}
-
 // chase player
 void chase(AlienRanged &alien, player &p1, float dt) {  // , float r = 0
 
@@ -375,9 +346,6 @@ void jump(AlienRanged &alien, Vec2 target, float dt) {
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
     alien.transform.localAngle = targetAngle;
 
-
-
-    
     alien.vel = toPlayer * -700;
     alien.transform.localPosition += alien.vel * dt;
 }
