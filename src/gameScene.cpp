@@ -176,8 +176,8 @@ namespace GameScene {
 
                 L.transform.translateByAngle(L.speed * dt);
 
-                if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
-                        L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
+                if (L.transform.getPosition().x >= WINDOW_WIDTH-20 || L.transform.getPosition().x < 0 ||
+                        L.transform.getPosition().y >= WINDOW_HEIGHT-20 || L.transform.getPosition().y < 0) {
                     deleteLazer(L, i);
                     continue;
                 }
@@ -191,7 +191,7 @@ namespace GameScene {
                         continue;
                     }
                 }
-                
+
                 i++;
             }
 
