@@ -39,6 +39,8 @@ namespace GameScene {
     const int windowWidthShadows = SDL_round(WINDOW_WIDTH/20), windowHeightShadows = SDL_round(WINDOW_HEIGHT/20);
     float current;
 
+    float start;
+
     void init() {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -98,6 +100,7 @@ namespace GameScene {
         horde[0].transform.pos = Vec2(1000, halfWindowHeight);
 
         current = getTimeInSeconds();
+        start = getTimeInSeconds();
     }
 
     void update(float dt) {
@@ -292,7 +295,7 @@ namespace GameScene {
         }
 
         for (Alien a : horde) {
-            drawAlien(a, a.active, current);
+            drawAlien(a, a.active, start);
         }
 
         //Shadows
@@ -321,6 +324,10 @@ namespace GameScene {
         drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
         drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
         drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
+
+        //debug detection radius
+        drawCircle(hero.transform.getPosition(LOCAL), hero.detectionInner, Color::red);
+        drawCircle(hero.transform.getPosition(LOCAL), hero.detectionOuter, Color::green);
 
         float spread = 30.0f; // half-angle
 

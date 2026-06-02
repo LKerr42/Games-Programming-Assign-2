@@ -65,8 +65,9 @@ void chase(Alien &alien, Hero &p1, float dt) {
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
     alien.transform.angle = targetAngle;
 
-    alien.vel = toPlayer * 150;
+    alien.vel = toPlayer * 100;
     alien.transform.pos += alien.vel * dt;
+    //alien.active = true;
 }
 
 void jump(Alien &alien, Vec2 target, float dt) {
@@ -93,7 +94,7 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
             //printf("is in jumping state\n");
             
             if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10) {
-                printf("has reached target after jump\n");
+                //printf("has reached target after jump\n");
                 Horde[i].currentTarget = Vec2(0,0);
                 Horde[i].state = COOL;
                 Horde[i].start = getTimeInSeconds();
@@ -103,7 +104,7 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
             float current = getTimeInSeconds();
             Horde[i].elapsed = current - Horde[i].start;
             if(Horde[i].elapsed > Horde[i].cooldown) {
-                printf("cooling ended, elapsed: %f \n", Horde[i].elapsed);
+                //printf("cooling ended, elapsed: %f \n", Horde[i].elapsed);
                 Horde[i].elapsed = 0.0f;
                 Horde[i].state = ANGRY;
             } else {chase(Horde[i], p1, dt);}
@@ -112,13 +113,13 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
             Horde[i].state = ANGRY;
             
         }
@@ -190,7 +191,7 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
 
 // check if player has entered alien awareness
 bool awareOfPlayer(AlienAdult &alien, Hero &p1) {
-    if(distance(alien.transform.pos, p1.transform.pos) < p1.sightRad*3) {
+    if(distance(alien.transform.pos, p1.transform.pos) < p1.detectionOuter) {
         return true;
     } else {
         return false;
@@ -257,13 +258,13 @@ void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
             Horde[i].state = ANGRY;
             
         }
@@ -396,13 +397,13 @@ void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start) 
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
 
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*3) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
             Horde[i].state = ANGRY;
             
         }
