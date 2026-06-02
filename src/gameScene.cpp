@@ -130,7 +130,6 @@ namespace GameScene {
 
             hero.transform.rotateTo(mousePosition());
             hero.transform.updateBoundingBox();
-            hero.sightConeAngle = SDL_abs(180 - hero.transform.angle);
 
             //Detect collision, and then calculate overlap to push back hero
             for (Wall W : walls) {
@@ -348,21 +347,28 @@ namespace GameScene {
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionInner, Color::red);
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionOuter, Color::green);
 
-        float spread = 30.0f; // half-angle
+        Vec2 tip = hero.transform.getPosition(LOCAL);
 
-        float leftRad  = (hero.sightConeAngle - spread) * M_PI / 180.0f;
-        float rightRad = (hero.sightConeAngle + spread) * M_PI / 180.0f;
+        float angleRad = hero.transform.angle * M_PI / 180.0f;
+        float length = hero.sightLength;
+        float spread = 30.0f;
 
-        Vec2 leftPoint(
-            hero.transform.pos.x + cos(leftRad) * hero.sightConeLen,
-            hero.transform.pos.y + sin(leftRad) * hero.sightConeLen
+        float leftRad  = angleRad - spread * M_PI / 180.0f;
+        float rightRad = angleRad + spread * M_PI / 180.0f;
+
+        Vec2 left(
+            tip.x + cos(leftRad) * length,
+            tip.y + sin(leftRad) * length
         );
 
-        Vec2 rightPoint(
-            hero.transform.pos.x + cos(rightRad) * hero.sightConeLen,
-            hero.transform.pos.y + sin(rightRad) * hero.sightConeLen
+        Vec2 right(
+            tip.x + cos(rightRad) * length,
+            tip.y + sin(rightRad) * length
         );
-        drawTriangle(hero.transform.pos, leftPoint, rightPoint, Color::yellow, hero.sightConeAngle);
+
+        drawLine(tip, left, Color::yellow);
+        drawLine(tip, right, Color::yellow);
+        drawLine(right, left, Color::yellow);
 
         //overlay display
         if (currentDisplay == HUD) {
@@ -417,9 +423,7 @@ namespace GameScene {
             }
         }
 
-        for (int i = 0; i < 1; i++) {
-            smoothShadows();
-        }
+        smoothShadows();
     }
 
     void smoothShadows() {
@@ -427,13 +431,11 @@ namespace GameScene {
 
         for (int y = 1; y < 35; y++) {
             for (int x = 1; x < 63; x++) {
-
                 int total = 0;
                 int count = 0;
 
                 for (int oy = -1; oy <= 1; oy++) {
                     for (int ox = -1; ox <= 1; ox++) {
-
                         total += shadows[y + oy][x + ox];
                         count++;
                     }
