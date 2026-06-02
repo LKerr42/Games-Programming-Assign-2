@@ -179,8 +179,7 @@ namespace GameScene {
                 if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
                         L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
                     deleteLazer(L, i);
-                } else {
-                    i++;
+                    continue;
                 }
 
                 //check walls against lasers
@@ -189,10 +188,11 @@ namespace GameScene {
                     Rect laserRect = {L.transform.getPosition().x, L.transform.getPosition().y, L.transform.getSize().x, L.transform.getSize().y};
                     if (collision(laserRect, L.transform.getAngle(), w.rect, 0.0f)) {
                         deleteLazer(L, i);
-                    } else {
-                        i++;
+                        continue;
                     }
                 }
+                
+                i++;
             }
 
             //check contact with items
