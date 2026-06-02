@@ -35,7 +35,7 @@ namespace GameScene {
         Texture* mainTexture;
     } DisplayElement;
 
-    enum Level {
+    enum Level : int {
         LEVEL_ONE,
         LEVEL_TWO,
         LEVEL_THREE
@@ -51,11 +51,12 @@ namespace GameScene {
     void render(float lag);
     void close();
 
-    void openItemImages();
     void displayDialogue(const char *msg);
     void setupShadows();
     void smoothShadows();
     void handleCollision(Rect collidingWith);
+
+    void deleteLazer(Laser& L, int indx);
 }
 
 #endif

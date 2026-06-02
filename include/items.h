@@ -5,20 +5,26 @@
 
 #include <animations.h>
 
+#include <vector>
+#include <list>
+
 namespace GameScene {
     typedef struct DisplayElement DisplayElement;
-    enum DisplayState : int ;
+    enum DisplayState : int;
+    enum Level : int;
 }
 
 class Hero;
 
 enum UpgradeType {
+    NONE,
     DASH,
     MELEE,
     INVISIBILITY,
     LONGER_SIGHT
 };
 
+// -- polymorphic items -
 class Item {
     public:
         Texture *smallTexture;
@@ -78,5 +84,22 @@ class Element : public Item {
         void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) override;
         Item* dropItem(Hero& hero) override;
 };
+
+
+// -- init --
+typedef struct ItemDefinition {
+    Texture *smallTexture;
+    Animation *animationLarge;
+    std::vector<float> data;
+    Rect dst;
+
+    GameScene::DisplayElement* ele;
+    UpgradeType upType;
+
+    char* title;
+} ItemDefinition;
+
+void loadDefinitions();
+void loadLevel(GameScene::Level toLoad, std::list<Item*>& itemsList);
 
 #endif

@@ -1,7 +1,7 @@
 CC=g++
 INCLUDE=-I./include/ -I./Engine/include/ -I./Engine/SDL3/include -I./Engine/SDL3_gfx/include/ -I./Engine/SDL3_gfx/include/SDL3_gfx/  -I./Engine/SDL3_mixer/include/ -I./Engine/SDL3_image/include/  -I./Engine/SDL3_ttf/include/
 BUILD=build
-CFLAGS = -O3
+CFLAGS = -O3 -Wno-write-strings
 SRC=src
 
 OBJ := $(patsubst ${SRC}/%.cpp,${BUILD}/%.o,$(wildcard ${SRC}/*.cpp))

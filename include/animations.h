@@ -18,10 +18,11 @@ typedef struct Animation {
     int numFrames;
     float duration, start;
     bool loop;
+    Vec2 dst;
 } Animation;
 
 Animation loadAnimation(const char *fileName, Rect src, int numberFrames, float duration, bool loop);
-int getAnimationIndex(Animation *animation, float time);
+int getAnimationIndex(Animation *animation, float time, bool* over);
 bool updateTimer(Timer* timer, float dt);
 void activateTimer(Timer* timer, float interval, bool isCooldown, bool startActive);
 void resetTimer(Timer* timer);

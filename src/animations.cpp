@@ -17,7 +17,7 @@ Animation loadAnimation(const char *fileName, Rect src, int numberFrames, float 
     return result;
 }
 
-int getAnimationIndex(Animation *animation, float time) {
+int getAnimationIndex(Animation *animation, float time, bool* over) {
     //calculate index
     int index = (time - animation->start) / animation->duration * animation->numFrames;
 
@@ -26,6 +26,8 @@ int getAnimationIndex(Animation *animation, float time) {
         index %= animation->numFrames;
     } else {
         //clamp index to range
+        if (index > animation->numFrames-1) *over = true; 
+
         index = SDL_clamp(index, 0, animation->numFrames-1);
     }
 

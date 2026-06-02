@@ -26,10 +26,11 @@ namespace GameScene {
 
     Level currentLevel = LEVEL_ONE;
     DisplayState currentDisplay = HUD;
-    Texture smallWeapons[3], smallArmour[3], smallUpgrades[3], background;
-    Animation armourAnimation;
-    Animation weaponAnimation;
-    Animation letterAnimation;
+
+    Texture background;
+    Animation lazerHit;
+
+    std::list<Animation*> playingAnimations;
 
     const float halfWindowHeight = WINDOW_HEIGHT / 2.0f;
     const int windowWidthShadows = SDL_round(WINDOW_WIDTH/20), windowHeightShadows = SDL_round(WINDOW_HEIGHT/20);
@@ -43,21 +44,16 @@ namespace GameScene {
         hero.tex = loadTexture("./assets/images/hero.png");
 
         //init items
-        openItemImages();
+        static Texture *baseWeaponTex = new Texture(loadTexture("./assets/images/items/weapon_small_01.png"));
+        static Animation *baseWeaponAni = new Animation(loadAnimation("./assets/images/items/weapon_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true));
 
-        static Texture letterLarge = loadTexture("./assets/images/letter_large.png");
-        letterElement = (DisplayElement){
-            "Hmm... seems to be left here by the crew",
-            25,
-            &letterLarge
-        };
+        hero.currWeapon = new Weapon(baseWeaponAni, baseWeaponTex, (Rect){0, 0, 0, 0}, "'E' to grab", 1.0f, 1.0f, 100);
+        loadDefinitions();
+        loadLevel(currentLevel, levelItems);
+
+        //init other animations
+        lazerHit = loadAnimation("./assets/images/laser_hit_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 0.5f, false);
         
-        hero.currWeapon = new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){0, 0, 0, 0}, "'E' to grab", 1.0f, 1.0f, 100);
-
-        levelItems.push_back(new Armour(&armourAnimation, &smallArmour[0], (Rect){640, halfWindowHeight, 0, 0}, "'E' to grab", 100, 100));
-        levelItems.push_back(new Weapon(&weaponAnimation, &smallWeapons[0], (Rect){700, halfWindowHeight, 0, 0}, "'E' to grab", 0.25f, 2.0f, 100));
-        levelItems.push_back(new Element(&letterAnimation, (Rect){300, halfWindowHeight, 0, 0}, "'E' to read", &letterElement));
-
         //init Hud
         hudBase = loadTexture("./assets/images/hud_base.png");
         float hudWidth = 128 * 8, hudHeight = 72 * 8;
@@ -154,10 +150,25 @@ namespace GameScene {
                 L.transform.translateByAngle(L.speed * dt);
 
                 if (L.transform.getPosition().x > WINDOW_WIDTH || L.transform.getPosition().x < 0 ||
-                    L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
-                    lasers.erase(lasers.begin() + i);
+                        L.transform.getPosition().y > WINDOW_HEIGHT || L.transform.getPosition().y < 0) {
+                    deleteLazer(L, i);
                 } else {
                     i++;
+                }
+            }
+
+            //check walls against lasers
+            //time complexity is O(n^2), but with very little walls and lasers realistically, this is pretty much free
+            for (int i = 0; i < lasers.size();) {
+                Laser &l = lasers.at(i);
+
+                for (Wall& w : walls) {
+                    Rect laserRect = {l.transform.getPosition().x, l.transform.getPosition().y, l.transform.getSize().x, l.transform.getSize().y};
+                    if (collision(laserRect, l.transform.getAngle(), w.rect, 0.0f)) {
+                        deleteLazer(l, i);
+                    } else {
+                        i++;
+                    }
                 }
             }
 
@@ -190,7 +201,6 @@ namespace GameScene {
 
             //check updates to shadows
             int sightRadShadows = SDL_round(hero.sightRad / 20);
-            //int sightDiamShadows = sightRadShadows << 1;
             Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
 
             for (int i = HeroPosShadows.y - sightRadShadows; i < HeroPosShadows.y + sightRadShadows; i++) {
@@ -204,14 +214,6 @@ namespace GameScene {
                     }
                 }
             }
-
-            // if (keyIsPressed(KEY_V)) {
-            //     std::cout << "R: " << sightRadShadows << "\n";
-            //     std::cout << "HPS: (" << HeroPosShadows.x << ", " << HeroPosShadows.y << ")\n";
-
-            //     std::cout << "i = " << HeroPosShadows.y - sightRadShadows << "; i < " << sightDiamShadows << "\n";
-            //     std::cout << "j = " << HeroPosShadows.x - sightRadShadows << "; j < " << sightDiamShadows << "\n";
-            // }
 
         } else {
             //check for display updates
@@ -260,8 +262,21 @@ namespace GameScene {
 
         //display items
         for (Item* item : levelItems) {
-            int indx = getAnimationIndex(item->animationLarge, current);
+            int indx = getAnimationIndex(item->animationLarge, current, nullptr);
             drawTexture(item->animationLarge->frames.at(indx), item->dst);
+        }
+
+        //display current animations
+        for (auto it = playingAnimations.begin(); it != playingAnimations.end();) {
+            bool isOver = false;
+            int indx = getAnimationIndex((*it), current, &isOver);
+            drawTexture((*it)->frames.at(indx), (Rect){(*it)->dst.x, (*it)->dst.y, 20, 20}); 
+
+            if (isOver) {
+                it = playingAnimations.erase(it);
+            } else {
+                ++it;
+            }
         }
 
         //Shadows
@@ -328,22 +343,6 @@ namespace GameScene {
 
     void close() {
 
-    }
-
-    void openItemImages() {
-        //inventory textures
-        smallWeapons[0] = loadTexture("./assets/images/items/weapon_small_01.png");
-        smallWeapons[1] = loadTexture("./assets/images/items/weapon_small_01.png");
-        smallWeapons[2] = loadTexture("./assets/images/items/weapon_small_01.png");
-
-        smallArmour[0] = loadTexture("./assets/images/items/armour_small_01.png");
-        smallArmour[1] = loadTexture("./assets/images/items/armour_small_01.png");
-        smallArmour[2] = loadTexture("./assets/images/items/armour_small_01.png");
-
-        //on ground animations
-        armourAnimation = loadAnimation("./assets/images/items/armour_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
-        weaponAnimation = loadAnimation("./assets/images/items/weapon_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
-        letterAnimation = loadAnimation("./assets/images/items/letter_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true);
     }
 
     void displayDialogue(const char *msg) {
@@ -417,4 +416,15 @@ namespace GameScene {
         transform = Transform(hero.transform.getPosition(LOCAL), hero.transform.getAngle(), Vec2(13, 3));
         speed = 300.0f;
     };
+
+    void deleteLazer(Laser& L, int indx) {
+        Animation* newLazer = (Animation*)calloc(1, sizeof(Animation));
+        *newLazer = lazerHit;
+
+        newLazer->dst = L.transform.getPosition();
+        newLazer->start = getTimeInSeconds();
+        playingAnimations.push_back(newLazer);
+        
+        lasers.erase(lasers.begin() + indx);      
+    }
 }
