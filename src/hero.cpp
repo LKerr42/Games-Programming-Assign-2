@@ -5,6 +5,8 @@ Hero::Hero() {
     health = 100;
     sightRad = 100.0f;
     sightConeLen = 150.0f;
+    detectionInner = 150.0f;
+    detectionOuter = 300.0f;
 
     currWeapon = nullptr; 
     currArmour = nullptr; 

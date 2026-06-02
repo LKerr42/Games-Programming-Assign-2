@@ -13,6 +13,8 @@ class Hero {
         int health;
         float sightRad;
         float sightConeLen, sightConeAngle;
+        float detectionOuter;
+        float detectionInner;
 
         Weapon *currWeapon; 
         Armour *currArmour;
