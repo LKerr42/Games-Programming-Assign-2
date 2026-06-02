@@ -4,13 +4,7 @@
 #include <engine.h>
 #include <hero.h>
 #include <transform.h>
-
-struct Animation {
-    std::vector<Texture> frames;
-    int no_frames;
-    float duration;
-    bool loop;
-};
+#include <animations.h>
 
 enum STATE_ID {IDLE, ANGRY, FOLLOW, JUMP, COOL};
 

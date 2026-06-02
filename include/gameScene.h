@@ -8,6 +8,7 @@
 #include <collisions.h>
 #include <transform.h>
 #include <hero.h>
+#include <alien.h>
 
 #include <iostream>
 #include <vector>

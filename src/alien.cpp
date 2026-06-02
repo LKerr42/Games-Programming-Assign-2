@@ -35,7 +35,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
     alien.animate.frames.push_back(subTexture(spritesheet, {80, 40, 40, 40}));
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
-    alien.animate.no_frames = 4;
+    alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
 
     Horde.push_back(alien);
@@ -130,8 +130,8 @@ void drawAlien(Alien &alien, bool active, float start) {
     if(active) {
         float current = getTimeInSeconds();
         float elapsed = current - start;
-        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
-        frameIndex %= alien.animate.no_frames;
+        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.numFrames;
+        frameIndex %= alien.animate.numFrames;
         drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
@@ -167,7 +167,7 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 60, 60}));
     alien.animate.frames.push_back(subTexture(spritesheet, {120, 0, 60, 60}));
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 60, 60}));
-    alien.animate.no_frames = 4;
+    alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
 
     Horde.push_back(alien);
@@ -274,8 +274,8 @@ void drawAlien(AlienAdult &alien, bool active, float start) {
     if(active) {
         float current = getTimeInSeconds();
         float elapsed = current - start;
-        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
-        frameIndex %= alien.animate.no_frames;
+        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.numFrames;
+        frameIndex %= alien.animate.numFrames;
         drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
@@ -311,7 +311,7 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
     alien.animate.frames.push_back(subTexture(spritesheet, {80, 0, 40, 40}));
     alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
-    alien.animate.no_frames = 4;
+    alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
 
     Horde.push_back(alien);
@@ -417,8 +417,8 @@ void drawAlien(AlienRanged &alien, bool active, float start) {
     if(active) {
         float current = getTimeInSeconds();
         float elapsed = current - start;
-        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
-        frameIndex %= alien.animate.no_frames;
+        int frameIndex = (elapsed / alien.animate.duration) * alien.animate.numFrames;
+        frameIndex %= alien.animate.numFrames;
         drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);

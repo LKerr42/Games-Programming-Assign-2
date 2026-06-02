@@ -6,6 +6,9 @@ namespace GameScene {
     Font pressStart;
 
     Hero hero;
+    std::vector<Alien> horde;
+
+    Texture alien;
 
     DisplayElement pausedElement;
     DisplayElement letterElement;
@@ -85,6 +88,13 @@ namespace GameScene {
         displayElementExit = createButton(
             Vec2(WINDOW_WIDTH - 70, WINDOW_HEIGHT - 40), Vec2(10, 10), "Exit", pressStart, 20.0f, Color::black, Color::white, QUIT, buttonBackground
         );
+
+        //init aliens
+        alien = loadTexture("./assets/images/aliens/spritesheet.png");
+
+        addAlien(horde, alien);
+
+        horde[0].transform.pos = Vec2(halfWindowHeight, 1000);
     }
 
     void update(float dt) {
