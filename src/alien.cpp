@@ -38,27 +38,31 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
     alien.animate.no_frames = 4;
     alien.animate.duration = 0.5;
 
-    bool hasSpace = true;
-    for(int j = 0; j < Horde.size(); j++) {
-        if(collision(alien.transform.position(), alien.size, alien.transform.localAngle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.localAngle)) {
-            hasSpace = false;
-        }
-    }
+    Horde.push_back(alien);
+    return true;
 
-    if(hasSpace) {
-        Horde.push_back(alien);
-        return true;
-    }
-    // Return result
-    return false;
+    // bool hasSpace = true;
+    // for(int j = 0; j < Horde.size(); j++) {
+    //     if (collision(alien.transform.pos, alien.size, alien.transform.angle, 
+    //             Horde[j].transform.pos, Horde[j].size, Horde[j].transform.angle)) {
+    //         hasSpace = false;
+    //     }
+    // }
+
+    // if(hasSpace) {
+    //     Horde.push_back(alien);
+    //     return true;
+    // }
+    // // Return result
+    // return false;
 }
 
-void chase(Alien &alien, player &p1, float dt) {
-    Vec2 toPlayer = unit(p1.position - alien.transform.position());
+void chase(Alien &alien, Hero &p1, float dt) {
+    Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
 
     alien.vel = toPlayer * 150;
     alien.transform.pos += alien.vel * dt;
@@ -69,16 +73,16 @@ void jump(Alien &alien, Vec2 target, float dt) {
         alien.active = true;
         return;
     }
-    Vec2 toPlayer = unit(target - alien.transform.position());
+    Vec2 toPlayer = unit(target - alien.transform.pos);
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
 
     
     alien.vel = toPlayer * 500;
     alien.transform.pos += alien.vel * dt;
 }
 
-void fsmAlien(std::vector<Alien> &Horde, player &p1, float dt, float start) {
+void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
     for(int i = 0; i < Horde.size(); i++) {
 
          //else {Horde[i].state.id == IDLE;}
@@ -107,8 +111,8 @@ void fsmAlien(std::vector<Alien> &Horde, player &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.position) < p1.innerRad) {
-                Horde[i].currentTarget = p1.position;
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.innerRad) {
+                Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
@@ -128,11 +132,11 @@ void drawAlien(Alien &alien, bool active, float start) {
         float elapsed = current - start;
         int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
         frameIndex %= alien.animate.no_frames;
-        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
-        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
-    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.localAngle);
+    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
 }
 
 
@@ -168,7 +172,7 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
 
     bool hasSpace = true;
     for(int j = 0; j < Horde.size(); j++) {
-        if(collision(alien.transform.position(), alien.size, alien.transform.localAngle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.localAngle)) {
+        if(collision(alien.transform.position(), alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
             hasSpace = false;
         }
     }
@@ -197,7 +201,7 @@ void chase(AlienAdult &alien, player &p1, float dt) {  // , float r = 0
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
 
     alien.vel = toPlayer * 80;
     alien.transform.pos += alien.vel * dt;
@@ -211,7 +215,7 @@ void jump(AlienAdult &alien, Vec2 target, float dt) {
     }
     Vec2 toPlayer = unit(target - alien.transform.position());
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
     alien.hitbox = Vec2(80, 120);
 
 
@@ -270,11 +274,11 @@ void drawAlien(AlienAdult &alien, bool active, float start) {
         float elapsed = current - start;
         int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
         frameIndex %= alien.animate.no_frames;
-        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
-        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
-    drawRect(alien.transform.pos - alien.hitbox/2, alien.hitbox, Color::red, alien.transform.localAngle);
+    drawRect(alien.transform.pos - alien.hitbox/2, alien.hitbox, Color::red, alien.transform.angle);
 
 }
 
@@ -310,7 +314,7 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
 
     bool hasSpace = true;
     for(int j = 0; j < Horde.size(); j++) {
-        if(collision(alien.transform.position(), alien.size, alien.transform.localAngle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.localAngle)) {
+        if(collision(alien.transform.position(), alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
             hasSpace = false;
         }
     }
@@ -330,7 +334,7 @@ void chase(AlienRanged &alien, player &p1, float dt) {  // , float r = 0
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
 
     alien.vel = toPlayer * 80;
     alien.transform.pos += alien.vel * dt;
@@ -344,7 +348,7 @@ void jump(AlienRanged &alien, Vec2 target, float dt) {
     }
     Vec2 toPlayer = unit(target - alien.transform.position());
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
-    alien.transform.localAngle = targetAngle;
+    alien.transform.angle = targetAngle;
 
     alien.vel = toPlayer * -700;
     alien.transform.pos += alien.vel * dt;
@@ -411,11 +415,11 @@ void drawAlien(AlienRanged &alien, bool active, float start) {
         float elapsed = current - start;
         int frameIndex = (elapsed / alien.animate.duration) * alien.animate.no_frames;
         frameIndex %= alien.animate.no_frames;
-        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     } else {
-        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.localAngle);
+        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
-    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.localAngle);
+    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
 
     if(alien.shooting) {
         fillCircle(alien.projectilePos, alien.projectileRad, Color::green);
