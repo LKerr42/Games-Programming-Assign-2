@@ -88,16 +88,6 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet);
 bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet);
 bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet);
 
-// check if player has entered alien awareness
-bool awareOfPlayer(Alien &alien, player &p1);
-bool awareOfPlayer(AlienAdult &alien, player &p1);
-bool awareOfPlayer(AlienRanged &alien, player &p1);
-
-// check for any nearby aware aliens
-Alien* nearestAwareAlien(Alien &alien);
-AlienAdult* nearestAwareAlien(AlienAdult &alien);
-AlienRanged* nearestAwareAlien(AlienRanged &alien);
-
 // chase player
 void chase(Alien &alien, player &p1, float dt);  // , float r = 0
 void chase(AlienAdult &alien, player &p1, float dt);
