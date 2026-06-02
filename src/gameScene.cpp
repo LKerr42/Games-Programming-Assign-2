@@ -116,7 +116,7 @@ namespace GameScene {
 
             hero.transform.rotateTo(mousePosition());
             hero.transform.updateBoundingBox();
-            hero.sightConeAngle = hero.transform.angle;
+            hero.sightConeAngle = SDL_abs(180 - hero.transform.angle);
 
             //Detect collision, and then calculate overlap to push back hero
             for (Wall W : walls) {
@@ -321,6 +321,22 @@ namespace GameScene {
         drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
         drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
         drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
+
+        float spread = 30.0f; // half-angle
+
+        float leftRad  = (hero.sightConeAngle - spread) * M_PI / 180.0f;
+        float rightRad = (hero.sightConeAngle + spread) * M_PI / 180.0f;
+
+        Vec2 leftPoint(
+            hero.transform.pos.x + cos(leftRad) * hero.sightConeLen,
+            hero.transform.pos.y + sin(leftRad) * hero.sightConeLen
+        );
+
+        Vec2 rightPoint(
+            hero.transform.pos.x + cos(rightRad) * hero.sightConeLen,
+            hero.transform.pos.y + sin(rightRad) * hero.sightConeLen
+        );
+        drawTriangle(hero.transform.pos, leftPoint, rightPoint, Color::yellow, hero.sightConeAngle);
 
         //overlay display
         if (currentDisplay == HUD) {
