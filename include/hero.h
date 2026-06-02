@@ -12,7 +12,7 @@ class Hero {
         Transform transform;
         int health;
         float sightRad;
-        float sightConeLen, sightConeAngle;
+        float sightLength;
         float detectionOuter;
         float detectionInner;
 
