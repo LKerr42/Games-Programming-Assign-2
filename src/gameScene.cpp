@@ -214,6 +214,24 @@ namespace GameScene {
             fsmAlien(horde, hero, dt, current);
 
             //check updates to shadows
+            Vec2 tip = hero.transform.getPosition(LOCAL);
+            float angleRad = hero.transform.angle * M_PI / 180.0f;
+            float length = hero.sightLength;
+            float spread = 30.0f;
+
+            float leftRad  = angleRad - spread * M_PI / 180.0f;
+            float rightRad = angleRad + spread * M_PI / 180.0f;
+
+            hero.sightLeft = Vec2(
+                tip.x + cos(leftRad) * length,
+                tip.y + sin(leftRad) * length
+            );
+
+            hero.sightRight = Vec2(
+                tip.x + cos(rightRad) * length,
+                tip.y + sin(rightRad) * length
+            );
+
             int sightRadShadows = SDL_round(hero.sightRad / 20);
             Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
 
@@ -328,28 +346,10 @@ namespace GameScene {
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionInner, Color::red);
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionOuter, Color::green);
 
-        Vec2 tip = hero.transform.getPosition(LOCAL);
-
-        float angleRad = hero.transform.angle * M_PI / 180.0f;
-        float length = hero.sightLength;
-        float spread = 30.0f;
-
-        float leftRad  = angleRad - spread * M_PI / 180.0f;
-        float rightRad = angleRad + spread * M_PI / 180.0f;
-
-        Vec2 left(
-            tip.x + cos(leftRad) * length,
-            tip.y + sin(leftRad) * length
-        );
-
-        Vec2 right(
-            tip.x + cos(rightRad) * length,
-            tip.y + sin(rightRad) * length
-        );
-
-        drawLine(tip, left, Color::yellow);
-        drawLine(tip, right, Color::yellow);
-        drawLine(right, left, Color::yellow);
+        //create triangle
+        drawLine(hero.transform.getPosition(LOCAL), hero.sightLeft, Color::yellow);
+        drawLine(hero.transform.getPosition(LOCAL), hero.sightRight, Color::yellow);
+        drawLine(hero.sightLeft, hero.sightRight, Color::yellow);
 
         //overlay display
         if (currentDisplay == HUD) {
