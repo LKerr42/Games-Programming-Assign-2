@@ -81,17 +81,17 @@ struct AlienRanged {
 
 
 // check collsions between aliens
-Alien* alienCollision(Vec2 pos, player &p1);
+Alien* alienCollision(Vec2 pos, Hero &p1);
 
 // create new alien
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet);
 bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet);
 bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet);
 
-// chase player
-void chase(Alien &alien, player &p1, float dt);  // , float r = 0
-void chase(AlienAdult &alien, player &p1, float dt);
-void chase(AlienRanged &alien, player &p1, float dt);
+// chase Hero
+void chase(Alien &alien, Hero &p1, float dt);  // , float r = 0
+void chase(AlienAdult &alien, Hero &p1, float dt);
+void chase(AlienRanged &alien, Hero &p1, float dt);
 
 // jumping
 void jump(Alien &alien, Vec2 target, float dt);
@@ -102,9 +102,9 @@ void jump(AlienRanged &alien, Vec2 target, float dt);
 void spit(AlienRanged &alien, Vec2 target, float dt);
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<Alien> &Horde, player &p1, float dt, float start);
-void fsmAlien(std::vector<AlienAdult> &Horde, player &p1, float dt, float start);
-void fsmAlien(std::vector<AlienRanged> &Horde, player &p1, float dt, float start);
+void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start);
+void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
+void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
 
 // draw alien
 void drawAlien(Alien &alien, bool active, float start);

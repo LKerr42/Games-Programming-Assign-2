@@ -111,13 +111,13 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.innerRad) {
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
                 Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.position) < p1.outerRad) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
             Horde[i].state = ANGRY;
             
         }
@@ -170,24 +170,26 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
     alien.animate.no_frames = 4;
     alien.animate.duration = 0.5;
 
-    bool hasSpace = true;
-    for(int j = 0; j < Horde.size(); j++) {
-        if(collision(alien.transform.position(), alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
-            hasSpace = false;
-        }
-    }
+    Horde.push_back(alien);
+    return true;
 
-    if(hasSpace) {
-        Horde.push_back(alien);
-        return true;
-    }
-    // Return result
-    return false;
+    // bool hasSpace = true;
+    // for(int j = 0; j < Horde.size(); j++) {
+    //     if(collision(alien.transform.pos, alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
+    //         hasSpace = false;
+    //     }
+    // }
+
+    // if(hasSpace) {
+
+    // }
+    // // Return result
+    // return false;
 }
 
 // check if player has entered alien awareness
-bool awareOfPlayer(AlienAdult &alien, player &p1) {
-    if(distance(alien.transform.pos, p1.position) < p1.outerRad) {
+bool awareOfPlayer(AlienAdult &alien, Hero &p1) {
+    if(distance(alien.transform.pos, p1.transform.pos) < p1.sightRad*2) {
         return true;
     } else {
         return false;
@@ -195,9 +197,9 @@ bool awareOfPlayer(AlienAdult &alien, player &p1) {
 }
 
 // chase player
-void chase(AlienAdult &alien, player &p1, float dt) {  // , float r = 0
+void chase(AlienAdult &alien, Hero &p1, float dt) {  // , float r = 0
 
-    Vec2 toPlayer = unit(p1.position - alien.transform.position());
+    Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
@@ -213,7 +215,7 @@ void jump(AlienAdult &alien, Vec2 target, float dt) {
         alien.active = true;
         return;
     }
-    Vec2 toPlayer = unit(target - alien.transform.position());
+    Vec2 toPlayer = unit(target - alien.transform.pos);
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
     alien.transform.angle = targetAngle;
     alien.hitbox = Vec2(80, 120);
@@ -225,7 +227,7 @@ void jump(AlienAdult &alien, Vec2 target, float dt) {
 }
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<AlienAdult> &Horde, player &p1, float dt, float start) {
+void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start) {
 
     for(int i = 0; i < Horde.size(); i++) {
         //chase(Horde[i], p1, dt);
@@ -254,13 +256,13 @@ void fsmAlien(std::vector<AlienAdult> &Horde, player &p1, float dt, float start)
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
             //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.position) < p1.innerRad) {
-                Horde[i].currentTarget = p1.position;
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
+                Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.position) < p1.outerRad) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
             Horde[i].state = ANGRY;
             
         }
@@ -312,25 +314,27 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
     alien.animate.no_frames = 4;
     alien.animate.duration = 0.5;
 
-    bool hasSpace = true;
-    for(int j = 0; j < Horde.size(); j++) {
-        if(collision(alien.transform.position(), alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
-            hasSpace = false;
-        }
-    }
+    Horde.push_back(alien);
+    return true;
 
-    if(hasSpace) {
-        Horde.push_back(alien);
-        return true;
-    }
-    // Return result
-    return false;
+    // bool hasSpace = true;
+    // for(int j = 0; j < Horde.size(); j++) {
+    //     if(collision(alien.transform.pos, alien.size, alien.transform.angle, Horde[j].transform.position(), Horde[j].size, Horde[j].transform.angle)) {
+    //         hasSpace = false;
+    //     }
+    // }
+
+    // if(hasSpace) {
+
+    // }
+    // // Return result
+    // return false;
 }
 
 // chase player
-void chase(AlienRanged &alien, player &p1, float dt) {  // , float r = 0
+void chase(AlienRanged &alien, Hero &p1, float dt) {  // , float r = 0
 
-    Vec2 toPlayer = unit(p1.position - alien.transform.position());
+    Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
@@ -346,7 +350,7 @@ void jump(AlienRanged &alien, Vec2 target, float dt) {
         alien.active = true;
         return;
     }
-    Vec2 toPlayer = unit(target - alien.transform.position());
+    Vec2 toPlayer = unit(target - alien.transform.pos);
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
     alien.transform.angle = targetAngle;
 
@@ -355,13 +359,13 @@ void jump(AlienRanged &alien, Vec2 target, float dt) {
 }
 
 void spit(AlienRanged &alien, Vec2 target, float dt) {
-    Vec2 toPlayer = unit(target - alien.transform.position());
+    Vec2 toPlayer = unit(target - alien.transform.pos);
     alien.projectileVel = toPlayer * 350;
     alien.projectilePos += alien.projectileVel * dt;
 }
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<AlienRanged> &Horde, player &p1, float dt, float start) {
+void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start) {
 
     for(int i = 0; i < Horde.size(); i++) {
 
@@ -391,13 +395,13 @@ void fsmAlien(std::vector<AlienRanged> &Horde, player &p1, float dt, float start
         } else if(Horde[i].state == ANGRY) {
             chase(Horde[i], p1, dt);
 
-            if(distance(Horde[i].transform.pos, p1.position) < p1.innerRad) {
-                Horde[i].currentTarget = p1.position;
+            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad) {
+                Horde[i].currentTarget = p1.transform.pos;
                 Horde[i].state = JUMP;
             }
             
         } 
-        else if(distance(Horde[i].transform.pos, p1.position) < p1.outerRad) {
+        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.sightRad*2) {
             Horde[i].state = ANGRY;
             
         }
