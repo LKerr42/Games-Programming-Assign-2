@@ -10,13 +10,12 @@ enum Space {
 };
 
 class Transform {
-    private:
+    public:
         Vec2 pos;
         Vec2 prevPos;
         Rect boundingBox;
         float angle;
         Vec2 size;
-    public:
         Transform() {};
         Transform(Vec2 pos, float angle, Vec2 size);
 
