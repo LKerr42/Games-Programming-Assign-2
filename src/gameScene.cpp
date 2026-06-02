@@ -116,6 +116,7 @@ namespace GameScene {
 
             hero.transform.rotateTo(mousePosition());
             hero.transform.updateBoundingBox();
+            hero.sightConeAngle = hero.transform.angle;
 
             //Detect collision, and then calculate overlap to push back hero
             for (Wall W : walls) {
@@ -168,17 +169,13 @@ namespace GameScene {
                 } else {
                     i++;
                 }
-            }
 
-            //check walls against lasers
-            //time complexity is O(n^2), but with very little walls and lasers realistically, this is pretty much free
-            for (int i = 0; i < lasers.size();) {
-                Laser &l = lasers.at(i);
-
+                //check walls against lasers
+                //time complexity is O(n^2), but with very little walls and lasers realistically, this is pretty much free
                 for (Wall& w : walls) {
-                    Rect laserRect = {l.transform.getPosition().x, l.transform.getPosition().y, l.transform.getSize().x, l.transform.getSize().y};
-                    if (collision(laserRect, l.transform.getAngle(), w.rect, 0.0f)) {
-                        deleteLazer(l, i);
+                    Rect laserRect = {L.transform.getPosition().x, L.transform.getPosition().y, L.transform.getSize().x, L.transform.getSize().y};
+                    if (collision(laserRect, L.transform.getAngle(), w.rect, 0.0f)) {
+                        deleteLazer(L, i);
                     } else {
                         i++;
                     }

@@ -12,6 +12,7 @@ class Hero {
         Transform transform;
         int health;
         float sightRad;
+        float sightConeLen, sightConeAngle;
 
         Weapon *currWeapon; 
         Armour *currArmour;
