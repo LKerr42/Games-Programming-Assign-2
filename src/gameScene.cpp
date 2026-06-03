@@ -205,15 +205,10 @@ namespace GameScene {
                     ammountColls++;
 
                     if (keyPressedThisFrame(KEY_E)){
-                        std::cout << "Starting drop\n";
                         Item *dropped = (*item)->dropItem(hero);
-                        if (dropped != nullptr) std::cout << dropped->hoverDialogue << "\n";
                         if (dropped != nullptr) levelItems.push_back(dropped);
-                        std::cout << "Item dropped\n";
                         (*item)->pickup(hero, &currentDisplay, &currentDisplayElement);
-                        std::cout << "Item picked up\n";
                         item = levelItems.erase(item);
-                        std::cout << "Item erased\n";
                         break;
                     } else {
                         ++item;
@@ -250,20 +245,36 @@ namespace GameScene {
                 tip.y + sin(rightRad) * length
             );
 
-            int sightRadShadows = SDL_round(hero.sightRad / 20);
-            Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
+            int minX = (min(tip.x, min(hero.sightLeft.x, hero.sightRight.x))) / 20;
+            int maxX = (max(tip.x, max(hero.sightLeft.x, hero.sightRight.x))) / 20;
 
-            for (int i = HeroPosShadows.y - sightRadShadows; i < HeroPosShadows.y + sightRadShadows; i++) {
-                for (int j = HeroPosShadows.x - sightRadShadows; j < HeroPosShadows.x + sightRadShadows + 2; j++) {
+            int minY = (min(tip.y, min(hero.sightLeft.y, hero.sightRight.y))) / 20;
+            int maxY = (max(tip.y, max(hero.sightLeft.y, hero.sightRight.y))) / 20;
+
+            for (int i = minY; i < maxY; i++) {
+                for (int j = minX; j < maxY; j++) {
                     if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
                         continue;
                     }
-                    if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
-                            Vec2(j*20, i*20), Vec2(20, 20))) {
-                        shadows[i][j] = 0;
-                    }
+
+                    if ()
                 }
             }
+
+            // int sightRadShadows = SDL_round(hero.sightRad / 20);
+            // Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
+
+            // for (int i = HeroPosShadows.y - sightRadShadows; i < HeroPosShadows.y + sightRadShadows; i++) {
+            //     for (int j = HeroPosShadows.x - sightRadShadows; j < HeroPosShadows.x + sightRadShadows + 2; j++) {
+            //         if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
+            //             continue;
+            //         }
+            //         if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
+            //                 Vec2(j*20, i*20), Vec2(20, 20))) {
+            //             shadows[i][j] = 0;
+            //         }
+            //     }
+            // }
 
         } else {
             //check for display updates
