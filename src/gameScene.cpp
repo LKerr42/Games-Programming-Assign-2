@@ -225,41 +225,41 @@ namespace GameScene {
             fsmAlien(spitters, hero, dt, current);
 
             //check updates to shadows
-            Vec2 tip = hero.transform.getPosition(LOCAL);
-            float angleRad = hero.transform.angle * M_PI / 180.0f;
-            float length = hero.sightLength;
-            float spread = 30.0f;
+            // Vec2 tip = hero.transform.getPosition(LOCAL);
+            // float angleRad = hero.transform.angle * M_PI / 180.0f;
+            // float length = hero.sightLength;
+            // float spread = 30.0f;
 
-            float leftRad  = angleRad - spread * M_PI / 180.0f;
-            float rightRad = angleRad + spread * M_PI / 180.0f;
+            // float leftRad  = angleRad - spread * M_PI / 180.0f;
+            // float rightRad = angleRad + spread * M_PI / 180.0f;
 
-            hero.sightLeft = Vec2(
-                tip.x + cos(leftRad) * length,
-                tip.y + sin(leftRad) * length
-            );
+            // hero.sightLeft = Vec2(
+            //     tip.x + cos(leftRad) * length,
+            //     tip.y + sin(leftRad) * length
+            // );
 
-            hero.sightRight = Vec2(
-                tip.x + cos(rightRad) * length,
-                tip.y + sin(rightRad) * length
-            );
+            // hero.sightRight = Vec2(
+            //     tip.x + cos(rightRad) * length,
+            //     tip.y + sin(rightRad) * length
+            // );
 
-            int minX = (min(tip.x, min(hero.sightLeft.x, hero.sightRight.x))) / 20;
-            int maxX = (max(tip.x, max(hero.sightLeft.x, hero.sightRight.x))) / 20;
+            // int minX = (min(tip.x, min(hero.sightLeft.x, hero.sightRight.x))) / 20;
+            // int maxX = (max(tip.x, max(hero.sightLeft.x, hero.sightRight.x))) / 20;
 
-            int minY = (min(tip.y, min(hero.sightLeft.y, hero.sightRight.y))) / 20;
-            int maxY = (max(tip.y, max(hero.sightLeft.y, hero.sightRight.y))) / 20;
+            // int minY = (min(tip.y, min(hero.sightLeft.y, hero.sightRight.y))) / 20;
+            // int maxY = (max(tip.y, max(hero.sightLeft.y, hero.sightRight.y))) / 20;
 
-            for (int i = minY; i < maxY; i++) {
-                for (int j = minX; j < maxX; j++) {
-                    if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
-                        continue;
-                    }
+            // for (int i = minY; i < maxY; i++) {
+            //     for (int j = minX; j < maxX; j++) {
+            //         if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
+            //             continue;
+            //         }
 
-                    if (pointInTriangle(Vec2(j*20, i*20), hero.transform.getPosition(LOCAL), hero.sightLeft, hero.sightRight)) {
-                        shadows[i][j] = 0;
-                    }
-                }
-            }
+            //         if (pointInTriangle(Vec2(j*20, i*20), hero.transform.getPosition(LOCAL), hero.sightLeft, hero.sightRight)) {
+            //             shadows[i][j] = 0;
+            //         }
+            //     }
+            // }
 
             // int sightRadShadows = SDL_round(hero.sightRad / 20);
             // Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
@@ -351,25 +351,25 @@ namespace GameScene {
         }
 
         //Shadows
-        for (int i = 0; i < 36; i++) {
-            for (int j = 0; j < 64; j++) {
-                Color currCol;
-                if (shadows[i][j] != 0) {
-                    if (shadows[i][j] == 1) {
-                        currCol = (Color){37, 37, 75};
-                    } else if (shadows[i][j] == 2) {
-                        currCol = (Color){25, 25, 50};
-                    } else if (shadows[i][j] == 3) {
-                        currCol = (Color){12, 12, 25};
-                    } else if (shadows[i][j] == 4) {
-                        currCol = (Color){7, 7, 15};
-                    } else {
-                        currCol = (Color){2, 2, 5};
-                    }
-                    fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
-                }
-            }
-        }
+        // for (int i = 0; i < 36; i++) {
+        //     for (int j = 0; j < 64; j++) {
+        //         Color currCol;
+        //         if (shadows[i][j] != 0) {
+        //             if (shadows[i][j] == 1) {
+        //                 currCol = (Color){37, 37, 75};
+        //             } else if (shadows[i][j] == 2) {
+        //                 currCol = (Color){25, 25, 50};
+        //             } else if (shadows[i][j] == 3) {
+        //                 currCol = (Color){12, 12, 25};
+        //             } else if (shadows[i][j] == 4) {
+        //                 currCol = (Color){7, 7, 15};
+        //             } else {
+        //                 currCol = (Color){2, 2, 5};
+        //             }
+        //             fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
+        //         }
+        //     }
+        // }
 
         //debug 
         // -- TODO: remove before submition --
@@ -433,7 +433,6 @@ namespace GameScene {
     }
 
     void initWalls() {
-        
         char* levelOne[36] = {};
     }
 
