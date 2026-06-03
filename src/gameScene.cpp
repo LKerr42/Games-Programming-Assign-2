@@ -97,8 +97,7 @@ namespace GameScene {
         );
 
         //init aliens
-        hatchlingTex = loadTexture("./assets/images/aliens/spritesheet.png");
-        matureTex = loadTexture("./assets/images/aliens/aliens2.png");
+        hatchlingTex = loadTexture("./assets/images/aliens/alien_01.png");
         //spitterTex = loadTexture("./assest/images/aliens/sprit")
 
         addAlien(hatchlings, hatchlingTex);

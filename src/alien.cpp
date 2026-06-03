@@ -30,12 +30,12 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
 
     alien.state = IDLE;
     alien.active = true;
-    alien.texture = subTexture(spritesheet, {0, 40, 40, 40});
+    alien.texture = subTexture(spritesheet, {0, 20, 20, 20});
 
-    alien.animate.frames.push_back(subTexture(spritesheet, {40, 40, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {80, 40, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 40, 40}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
     alien.animate.numFrames = 4;
     alien.animate.duration = 0.5f;
     alien.animate.start = getTimeInSeconds();

@@ -1,6 +1,6 @@
 # Build files
-# build/
-# pest_control.exe
+build/
+pest_control.exe
 
 # OS junk
 .DS_Store
