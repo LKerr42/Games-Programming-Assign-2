@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <fstream>
 
 // GameScene Namespace
 namespace GameScene {
@@ -26,8 +27,6 @@ namespace GameScene {
 
     typedef struct Wall {
         Rect rect;
-        bool active;
-        Texture activeTex, inactiveTex;
     } Wall;
 
     typedef struct DisplayElement {
@@ -55,6 +54,8 @@ namespace GameScene {
     void displayDialogue(const char *msg);
     void setupShadows();
     void smoothShadows();
+    void initWalls();
+
     void handleCollision(Rect collidingWith);
 
     bool pointInTriangle(Vec2 p, Vec2 a, Vec2 b, Vec2 c);

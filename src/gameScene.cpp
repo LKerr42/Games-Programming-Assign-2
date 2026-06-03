@@ -22,6 +22,10 @@ namespace GameScene {
     
     int shadows[36][64];
 
+    bool levelOneWalls[36][64];
+    bool levelTwoWalls[36][64];
+    bool levelThreeWalls[36][64];
+
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
     std::list<Item*> levelItems;
@@ -68,13 +72,13 @@ namespace GameScene {
         hudDest = (Rect){0, 0, hudWidth, hudHeight};
 
         //init level
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, 0, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, 0, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, 0, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, 0, 300, 200}});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, 0, 300, 200}});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, 0, 300, 200}});
 
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}, true, NULL, NULL});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
+        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
 
@@ -103,12 +107,6 @@ namespace GameScene {
         hatchlings[0].transform.pos = Vec2(1000, halfWindowHeight);
         matureAliens[0].transform.pos = Vec2(500, halfWindowHeight);
         spitters[0].transform.pos = Vec2(700, halfWindowHeight);
-          //addAlien(matureAliens, matureTex);
-        //matureAliens[0].transform.pos = Vec2(1000, halfWindowHeight);
-        //addAlien(spitters, hatchlingTex);
-        //spitters[0].transform.pos = Vec2(1000, halfWindowHeight);
-        
-
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
@@ -432,6 +430,11 @@ namespace GameScene {
         Vec2 msgSize = measureText(msg, pressStart, 14);
         Vec2 pos = Vec2(heroPos.x - (msgSize.x/2), heroPos.y - 30);
         drawText(pos, msg, Color::white, pressStart, 14, 0.0f);
+    }
+
+    void initWalls() {
+        
+        char* levelOne[36] = {};
     }
 
     void setupShadows() {
