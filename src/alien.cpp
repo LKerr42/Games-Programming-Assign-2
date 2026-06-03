@@ -168,10 +168,10 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
     alien.active = true;
     alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
 
-    alien.animate.frames.push_back(subTexture(spritesheet, {60, 0, 60, 60}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 60, 60}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {120, 0, 60, 60}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 60, 60}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {20, 20, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {40, 20, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
     alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
 
@@ -309,17 +309,17 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
         alien.transform.pos = Vec2(WINDOW_WIDTH+10, uniform(0, WINDOW_HEIGHT));
     }
 
-    alien.size = Vec2(60, 60);
+    alien.size = Vec2(40, 40);
     alien.transform.size = Vec2(60,60);
 
     alien.state = IDLE;
     alien.active = true;
     alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
 
-    alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {80, 0, 40, 40}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {20, 40, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {40, 40, 20, 20}));
+    alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
     alien.animate.numFrames = 4;
     alien.animate.duration = 0.5;
 

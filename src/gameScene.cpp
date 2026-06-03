@@ -10,9 +10,7 @@ namespace GameScene {
     std::vector<AlienAdult> matureAliens;
     std::vector<AlienRanged> spitters;
 
-    Texture hatchlingTex;
-    Texture matureTex; 
-    Texture spitterTex;
+    Texture alienSpritesheet;
 
     DisplayElement pausedElement;
     DisplayElement letterElement;
@@ -97,11 +95,14 @@ namespace GameScene {
         );
 
         //init aliens
-        hatchlingTex = loadTexture("./assets/images/aliens/alien_01.png");
-        //spitterTex = loadTexture("./assest/images/aliens/sprit")
+        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet.png");
 
-        addAlien(hatchlings, hatchlingTex);
+        addAlien(hatchlings, alienSpritesheet);
+        addAlien(matureAliens, alienSpritesheet);
+        addAlien(spitters, alienSpritesheet);
         hatchlings[0].transform.pos = Vec2(1000, halfWindowHeight);
+        matureAliens[0].transform.pos = Vec2(500, halfWindowHeight);
+        spitters[0].transform.pos = Vec2(700, halfWindowHeight);
           //addAlien(matureAliens, matureTex);
         //matureAliens[0].transform.pos = Vec2(1000, halfWindowHeight);
         //addAlien(spitters, hatchlingTex);
