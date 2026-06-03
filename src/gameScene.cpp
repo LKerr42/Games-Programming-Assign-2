@@ -103,7 +103,7 @@ namespace GameScene {
 
         addAlien(hatchlings, hatchlingTex);
         hatchlings[0].transform.pos = Vec2(1000, halfWindowHeight);
-        //addAlien(matureAliens, matureTex);
+          //addAlien(matureAliens, matureTex);
         //matureAliens[0].transform.pos = Vec2(1000, halfWindowHeight);
         //addAlien(spitters, hatchlingTex);
         //spitters[0].transform.pos = Vec2(1000, halfWindowHeight);
