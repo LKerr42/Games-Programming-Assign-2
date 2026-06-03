@@ -47,7 +47,11 @@ void Armour::pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene:
 }
 
 Item* Armour::dropItem(Hero& hero) {
-    if (hero.currArmour == nullptr) return nullptr;
+    std::cout << "Dropping armour\n";
+    if (hero.currArmour == nullptr) {
+        std::cout << "currArmour is null\n";
+        return nullptr;
+    }
     Item* dropped = hero.currArmour;
     dropped->dst.x = hero.transform.getPosition().x;
     dropped->dst.y = hero.transform.getPosition().y;

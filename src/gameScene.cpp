@@ -205,10 +205,15 @@ namespace GameScene {
                     ammountColls++;
 
                     if (keyPressedThisFrame(KEY_E)){
+                        std::cout << "Starting drop\n";
                         Item *dropped = (*item)->dropItem(hero);
+                        if (dropped != nullptr) std::cout << dropped->hoverDialogue << "\n";
                         if (dropped != nullptr) levelItems.push_back(dropped);
+                        std::cout << "Item dropped\n";
                         (*item)->pickup(hero, &currentDisplay, &currentDisplayElement);
+                        std::cout << "Item picked up\n";
                         item = levelItems.erase(item);
+                        std::cout << "Item erased\n";
                         break;
                     } else {
                         ++item;
