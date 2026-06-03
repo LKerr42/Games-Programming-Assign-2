@@ -9,7 +9,7 @@ Alien* alienCollision(Vec2 pos, Hero &p1) {
     
 }
 
-bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
+bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
     Alien alien;
 
     int wall = 0;
@@ -24,18 +24,37 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
         alien.transform.pos = Vec2(WINDOW_WIDTH+10, uniform(0, WINDOW_HEIGHT));
     }
 
-
-    alien.size = Vec2(40, 40);
-    alien.transform.size = Vec2(40,40);
+    alien.type = type;
+    switch(type) {
+        case HATCHLING:
+            alien.transform.size = Vec2(40,40);
+            alien.texture = subTexture(spritesheet, {0, 20, 20, 20});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+            break;
+        case MATURE:
+            alien.transform.size = Vec2(80, 80);
+            alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+            break;
+        case SPITTER:
+            alien.transform.size = Vec2(60, 60);
+            alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 40, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 40, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
+            break;
+    }
 
     alien.state = IDLE;
     alien.active = true;
-    alien.texture = subTexture(spritesheet, {0, 20, 20, 20});
 
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
-    alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
     alien.animate.numFrames = 4;
     alien.animate.duration = 0.5f;
     alien.animate.start = getTimeInSeconds();
@@ -60,18 +79,27 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
 }
 
 void chase(Alien &alien, Hero &p1, float dt) {
+    int speed;
+    if(alien.type == HATCHLING) speed = 100;
+    if(alien.type == MATURE || alien.type == SPITTER) speed = 80;
+
     Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
 
 
     float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
     alien.transform.angle = targetAngle;
 
-    alien.vel = toPlayer * 100;
+    alien.vel = toPlayer * speed;
     alien.transform.pos += alien.vel * dt;
     //alien.active = true;
 }
 
 void jump(Alien &alien, Vec2 target, float dt) {
+    int speed;
+    if(alien.type == HATCHLING) {speed = 500;}
+    if(alien.type == MATURE) {speed = 300; } 
+    if(alien.type == SPITTER) speed = -700;
+
     if(distance(alien.transform.pos, target) < 10) {
         alien.active = true;
         return;
@@ -81,7 +109,7 @@ void jump(Alien &alien, Vec2 target, float dt) {
     alien.transform.angle = targetAngle;
 
     
-    alien.vel = toPlayer * 500;
+    alien.vel = toPlayer * speed;
     alien.transform.pos += alien.vel * dt;
 }
 
@@ -139,7 +167,8 @@ void drawAlien(Alien &alien, bool active, float start) {
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
-    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
+    // made changes to get size getting from transform
+    drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
     drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
 }
 
@@ -286,6 +315,7 @@ void drawAlien(AlienAdult &alien, bool active, float start) {
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
+
     drawRect(alien.transform.pos - alien.hitbox/2, alien.hitbox, Color::red, alien.transform.angle);
     
     drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
@@ -310,7 +340,7 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
     }
 
     alien.size = Vec2(40, 40);
-    alien.transform.size = Vec2(60,60);
+    alien.transform.size = Vec2(40,40);
 
     alien.state = IDLE;
     alien.active = true;
@@ -432,7 +462,7 @@ void drawAlien(AlienRanged &alien, bool active, float start) {
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
-    drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
+    drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
     drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
     if(alien.shooting) {
         fillCircle(alien.projectilePos, alien.projectileRad, Color::green);

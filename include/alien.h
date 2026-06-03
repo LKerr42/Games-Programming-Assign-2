@@ -7,8 +7,13 @@
 #include <animations.h>
 
 enum STATE_ID {IDLE, ANGRY, FOLLOW, JUMP, COOL};
+enum AlienType {HATCHLING, MATURE, SPITTER};
 
-struct AlienAdult {
+
+/*struct AlienAdult {
+
+    AlienType type;
+
     Transform transform;
     Vec2 vel;
     Vec2 size;
@@ -69,6 +74,27 @@ struct AlienRanged {
     Animation animate;
 
     STATE_ID state;
+};*/
+
+struct Alien {
+    AlienType type;
+    Transform transform;
+    Vec2 vel;
+    Vec2 size;
+    Vec2 currentTarget = Vec2(0,0);
+    Vec2 hitbox;
+
+    float detecRadius;
+    bool active;
+
+    float start = 0.0f;
+    float elapsed = 0.0f;
+    float cooldown = 2;
+
+    Texture texture;
+    Animation animate;
+
+    STATE_ID state;
 };
 
 
@@ -78,7 +104,9 @@ struct AlienRanged {
 Alien* alienCollision(Vec2 pos, Hero &p1);
 
 // create new alien
-bool addAlien(std::vector<Alien> &Horde, Texture spritesheet);
+bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type);
+
+
 bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet);
 bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet);
 
