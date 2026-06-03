@@ -381,11 +381,6 @@ namespace GameScene {
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionInner, Color::red);
         drawCircle(hero.transform.getPosition(LOCAL), hero.detectionOuter, Color::green);
 
-        //create triangle
-        drawLine(hero.transform.getPosition(LOCAL), hero.sightLeft, Color::yellow);
-        drawLine(hero.transform.getPosition(LOCAL), hero.sightRight, Color::yellow);
-        drawLine(hero.sightLeft, hero.sightRight, Color::yellow);
-
         //overlay display
         if (currentDisplay == HUD) {
             drawTexture(hudBase, hudDest);
