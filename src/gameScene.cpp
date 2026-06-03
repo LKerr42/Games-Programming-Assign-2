@@ -252,12 +252,14 @@ namespace GameScene {
             int maxY = (max(tip.y, max(hero.sightLeft.y, hero.sightRight.y))) / 20;
 
             for (int i = minY; i < maxY; i++) {
-                for (int j = minX; j < maxY; j++) {
+                for (int j = minX; j < maxX; j++) {
                     if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
                         continue;
                     }
 
-                    if ()
+                    if (pointInTriangle(Vec2(j*20, i*20), hero.transform.getPosition(LOCAL), hero.sightLeft, hero.sightRight)) {
+                        shadows[i][j] = 0;
+                    }
                 }
             }
 
@@ -351,7 +353,7 @@ namespace GameScene {
         }
 
         //Shadows
-        /*for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 36; i++) {
             for (int j = 0; j < 64; j++) {
                 Color currCol;
                 if (shadows[i][j] != 0) {
@@ -369,7 +371,7 @@ namespace GameScene {
                     fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
                 }
             }
-        }*/
+        }
 
         //debug 
         // -- TODO: remove before submition --
@@ -486,6 +488,17 @@ namespace GameScene {
         } else if (minOverlap == bottom) {
             hero.transform.translate(Vec2(0, bottom));
         }
+    }
+
+    bool pointInTriangle(Vec2 p, Vec2 a, Vec2 b, Vec2 c) {
+        float d1 = (p.x - b.x)*(a.y - b.y) - (a.x - b.x)*(p.y - b.y);
+        float d2 = (p.x - c.x)*(b.y - c.y) - (b.x - c.x)*(p.y - c.y);
+        float d3 = (p.x - a.x)*(c.y - a.y) - (c.x - a.x)*(p.y - a.y);
+
+        bool hasNeg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        bool hasPos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+        return !(hasNeg && hasPos);
     }
 
     Laser::Laser() {

@@ -57,6 +57,8 @@ namespace GameScene {
     void smoothShadows();
     void handleCollision(Rect collidingWith);
 
+    bool pointInTriangle(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
+
     void deleteLazer(Laser& L, int indx);
 }
 
