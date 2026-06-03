@@ -26,6 +26,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet) {
 
 
     alien.size = Vec2(40, 40);
+    alien.transform.size = Vec2(40,40);
 
     alien.state = IDLE;
     alien.active = true;
@@ -88,7 +89,7 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
     for(int i = 0; i < Horde.size(); i++) {
 
          //else {Horde[i].state.id == IDLE;}
-        
+        Horde[i].transform.updateBoundingBox();
         if(Horde[i].state == JUMP) {
             jump(Horde[i], Horde[i].currentTarget, dt);
             //printf("is in jumping state\n");
@@ -139,6 +140,7 @@ void drawAlien(Alien &alien, bool active, float start) {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
     drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
+    drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
 }
 
 
@@ -160,6 +162,7 @@ bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
     }
 
     alien.size = Vec2(80, 80);
+    alien.transform.size = Vec2(80,80);
     alien.hitbox = Vec2(80, 80);
     alien.state = IDLE;
     alien.active = true;
@@ -233,6 +236,7 @@ void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start) {
 
     for(int i = 0; i < Horde.size(); i++) {
         //chase(Horde[i], p1, dt);
+        Horde[i].transform.updateBoundingBox();
         if(Horde[i].state == JUMP) {
             jump(Horde[i], Horde[i].currentTarget, dt);
             //printf("is in jumping state\n");
@@ -283,6 +287,8 @@ void drawAlien(AlienAdult &alien, bool active, float start) {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
     drawRect(alien.transform.pos - alien.hitbox/2, alien.hitbox, Color::red, alien.transform.angle);
+    
+    drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
 
 }
 
@@ -304,6 +310,7 @@ bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet) {
     }
 
     alien.size = Vec2(60, 60);
+    alien.transform.size = Vec2(60,60);
 
     alien.state = IDLE;
     alien.active = true;
@@ -370,7 +377,7 @@ void spit(AlienRanged &alien, Vec2 target, float dt) {
 void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start) {
 
     for(int i = 0; i < Horde.size(); i++) {
-
+        Horde[i].transform.updateBoundingBox();
         if(Horde[i].state == JUMP) {
             jump(Horde[i], Horde[i].currentTarget, dt);
 
@@ -426,7 +433,7 @@ void drawAlien(AlienRanged &alien, bool active, float start) {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
     drawRect(alien.transform.pos - alien.size/2, alien.size, Color::red, alien.transform.angle);
-
+    drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
     if(alien.shooting) {
         fillCircle(alien.projectilePos, alien.projectileRad, Color::green);
     }
