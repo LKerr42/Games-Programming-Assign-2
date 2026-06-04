@@ -105,6 +105,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 70, 20, 20}));
             alien.animate.frames.push_back(subTexture(spritesheet, {40, 70, 20, 20}));
             alien.animate.duration = 0.3f;
+            alien.cooldown = 2;
             alien.health = 100;
             break;
         case MATURE:
@@ -116,6 +117,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {80, 0, 40, 40}));
             alien.health = 200;
             alien.animate.duration = 0.75f;
+            alien.cooldown = 3;
             break;
         case SPITTER:
             alien.transform.size = Vec2(60, 60);
@@ -125,6 +127,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 30, 30}));
             alien.animate.frames.push_back(subTexture(spritesheet, {60, 40, 30, 30}));
             alien.animate.duration = 0.5f;
+            alien.cooldown = 1;
             
             alien.health = 150;
             break;
@@ -304,6 +307,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
                 spit(Horde[i], Horde[i].currentTarget, dt);
                 // bool collision(Vec2 pos1, float radius1, Vec2 pos2, Vec2 size2)
                 if(collision(Horde[i].projectilePos, Horde[i].projectileRad, p1.transform.pos, p1.transform.size)) {
+                    printf("hit by acid \n"); printf("Health: %i", p1.health);
                     p1.health -= 25;
                 }
             }

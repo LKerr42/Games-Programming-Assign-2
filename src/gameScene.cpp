@@ -404,12 +404,14 @@ namespace GameScene {
             float healthBarWidth = 256 * (hero.health / 100);
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(healthBarWidth, 24), healthCol);
 
+            drawTexture(hudBase, hudDest);
+
             //energy bar
             float energyPercentage = (hero.currWeapon->currEnergy / hero.currWeapon->fullEnergy);
             float energyBarWidth = 192 * energyPercentage;
             fillRect(Vec2(20*HUD_PIXEL_SIZE, 12*HUD_PIXEL_SIZE), Vec2(energyBarWidth, 16), (Color){66, 135, 245, 255});
 
-            drawTexture(hudBase, hudDest);
+            
             
 
             //inventory
