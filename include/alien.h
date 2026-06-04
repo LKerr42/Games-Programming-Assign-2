@@ -87,6 +87,11 @@ struct Alien {
     float detecRadius;
     bool active;
 
+    Vec2 projectilePos;
+    Vec2 projectileVel;
+    float projectileRad = 10;
+    bool shooting;
+
     float start = 0.0f;
     float elapsed = 0.0f;
     float cooldown = 2;
@@ -107,30 +112,30 @@ Alien* alienCollision(Vec2 pos, Hero &p1);
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type);
 
 
-bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet);
-bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet);
+//bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet);
+//bool addAlien(std::vector<AlienRanged> &Horde, Texture spritesheet);
 
 // chase Hero
 void chase(Alien &alien, Hero &p1, float dt);  // , float r = 0
-void chase(AlienAdult &alien, Hero &p1, float dt);
-void chase(AlienRanged &alien, Hero &p1, float dt);
+//void chase(AlienAdult &alien, Hero &p1, float dt);
+//void chase(AlienRanged &alien, Hero &p1, float dt);
 
 // jumping
 void jump(Alien &alien, Vec2 target, float dt);
-void jump(AlienAdult &alien, Vec2 target, float dt);
-void jump(AlienRanged &alien, Vec2 target, float dt);
+//void jump(AlienAdult &alien, Vec2 target, float dt);
+//void jump(AlienRanged &alien, Vec2 target, float dt);
 
 // projectiles
-void spit(AlienRanged &alien, Vec2 target, float dt);
+void spit(Alien &alien, Vec2 target, float dt);
 
 // Finite state machine controller - remember state
 void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start);
-void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
-void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
+//void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
+//void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
 
 // draw alien
 void drawAlien(Alien &alien, bool active, float start);
-void drawAlien(AlienAdult &alien, bool active, float start);
-void drawAlien(AlienRanged &alien, bool active, float start);
+//void drawAlien(AlienAdult &alien, bool active, float start);
+//void drawAlien(AlienRanged &alien, bool active, float start);
 
 #endif

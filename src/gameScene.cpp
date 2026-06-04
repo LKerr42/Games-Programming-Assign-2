@@ -6,9 +6,9 @@ namespace GameScene {
     Font pressStart;
 
     Hero hero;
-    std::vector<Alien> hatchlings;
-    std::vector<AlienAdult> matureAliens;
-    std::vector<AlienRanged> spitters;
+    std::vector<Alien> aliens;
+    //std::vector<AlienAdult> matureAliens;
+    //std::vector<AlienRanged> spitters;
 
     Texture alienSpritesheet;
 
@@ -101,12 +101,12 @@ namespace GameScene {
         //init aliens
         alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet.png");
 
-        addAlien(hatchlings, alienSpritesheet);
-        addAlien(matureAliens, alienSpritesheet);
-        addAlien(spitters, alienSpritesheet);
-        hatchlings[0].transform.pos = Vec2(1000, halfWindowHeight);
-        matureAliens[0].transform.pos = Vec2(500, halfWindowHeight);
-        spitters[0].transform.pos = Vec2(700, halfWindowHeight);
+        addAlien(aliens, alienSpritesheet, HATCHLING);
+        addAlien(aliens, alienSpritesheet, MATURE);
+        addAlien(aliens, alienSpritesheet, SPITTER);
+        aliens[0].transform.pos = Vec2(1000, halfWindowHeight);
+        aliens[1].transform.pos = Vec2(500, halfWindowHeight);
+        aliens[2].transform.pos = Vec2(700, halfWindowHeight);
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
@@ -220,9 +220,10 @@ namespace GameScene {
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
             //update aliens
-            fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
-            fsmAlien(matureAliens, hero, dt, current);
-            fsmAlien(spitters, hero, dt, current);
+            fsmAlien(aliens, hero, dt, current);
+            //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
+            //fsmAlien(matureAliens, hero, dt, current);
+            //fsmAlien(spitters, hero, dt, current);
 
             //check updates to shadows
             // Vec2 tip = hero.transform.getPosition(LOCAL);
@@ -340,15 +341,16 @@ namespace GameScene {
             }
         }
 
-        for (Alien a : hatchlings) {
+        for (Alien a : aliens) {
             drawAlien(a, a.active, start);
         }
-        for (AlienAdult a : matureAliens) {
+
+        /*for (AlienAdult a : matureAliens) {
             drawAlien(a, a.active, start);
         }
         for (AlienRanged a : spitters) {
             drawAlien(a, a.active, start);
-        }
+        }*/
 
         //Shadows
         // for (int i = 0; i < 36; i++) {

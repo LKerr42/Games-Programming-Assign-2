@@ -29,10 +29,10 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
         case HATCHLING:
             alien.transform.size = Vec2(40,40);
             alien.texture = subTexture(spritesheet, {0, 20, 20, 20});
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 20, 20, 20}));
             break;
         case MATURE:
             alien.transform.size = Vec2(80, 80);
@@ -97,8 +97,8 @@ void chase(Alien &alien, Hero &p1, float dt) {
 void jump(Alien &alien, Vec2 target, float dt) {
     int speed;
     if(alien.type == HATCHLING) {speed = 500;}
-    if(alien.type == MATURE) {speed = 300; } 
-    if(alien.type == SPITTER) speed = -700;
+    if(alien.type == MATURE) {speed = 300; alien.hitbox = Vec2(80, 120);} 
+    if(alien.type == SPITTER) {speed = -700;}
 
     if(distance(alien.transform.pos, target) < 10) {
         alien.active = true;
@@ -113,46 +113,95 @@ void jump(Alien &alien, Vec2 target, float dt) {
     alien.transform.pos += alien.vel * dt;
 }
 
+void spit(Alien &alien, Vec2 target, float dt) {
+    Vec2 toPlayer = unit(target - alien.transform.pos);
+    alien.projectileVel = toPlayer * 350;
+    alien.projectilePos += alien.projectileVel * dt;
+}
+
 void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
+
+    
     for(int i = 0; i < Horde.size(); i++) {
-
-         //else {Horde[i].state.id == IDLE;}
         Horde[i].transform.updateBoundingBox();
-        if(Horde[i].state == JUMP) {
-            jump(Horde[i], Horde[i].currentTarget, dt);
-            //printf("is in jumping state\n");
-            
-            if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10) {
-                //printf("has reached target after jump\n");
-                Horde[i].currentTarget = Vec2(0,0);
-                Horde[i].state = COOL;
-                Horde[i].start = getTimeInSeconds();
-            }
-        } else if(Horde[i].state == COOL) {
-            //printf("cooling off\n");
-            float current = getTimeInSeconds();
-            Horde[i].elapsed = current - Horde[i].start;
-            if(Horde[i].elapsed > Horde[i].cooldown) {
-                //printf("cooling ended, elapsed: %f \n", Horde[i].elapsed);
-                Horde[i].elapsed = 0.0f;
-                Horde[i].state = ANGRY;
-            } else {chase(Horde[i], p1, dt);}
+        if(Horde[i].type == HATCHLING || Horde[i].type == MATURE) {
+            if(Horde[i].state == JUMP) {
+                jump(Horde[i], Horde[i].currentTarget, dt);
+                //printf("is in jumping state\n");
+                
+                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10) {
+                    //printf("has reached target after jump\n");
+                    if(Horde[i].type == MATURE) {Horde[i].hitbox = Vec2(80,80);}
+                    Horde[i].currentTarget = Vec2(0,0);
+                    Horde[i].state = COOL;
+                    Horde[i].start = getTimeInSeconds();
+                }
+            } else if(Horde[i].state == COOL) {
+                //printf("cooling off\n");
+                float current = getTimeInSeconds();
+                Horde[i].elapsed = current - Horde[i].start;
+                if(Horde[i].elapsed > Horde[i].cooldown) {
+                    //printf("cooling ended, elapsed: %f \n", Horde[i].elapsed);
+                    Horde[i].elapsed = 0.0f;
+                    Horde[i].state = ANGRY;
+                } else {chase(Horde[i], p1, dt);}
 
-            // time setter to wait or chase -- after timer if in range jump again
-        } else if(Horde[i].state == ANGRY) {
-            chase(Horde[i], p1, dt);
-            //printf("is in chase state\n");
-            if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
-                Horde[i].currentTarget = p1.transform.pos;
-                Horde[i].state = JUMP;
+                // time setter to wait or chase -- after timer if in range jump again
+            } else if(Horde[i].state == ANGRY) {
+                chase(Horde[i], p1, dt);
+                //printf("is in chase state\n");
+                if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
+                    Horde[i].currentTarget = p1.transform.pos;
+                    Horde[i].state = JUMP;
+                }
+                
+            } 
+            else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
+                Horde[i].state = ANGRY;
+                
             }
+        } else {
+            if(Horde[i].state == JUMP) {
+            jump(Horde[i], Horde[i].currentTarget, dt);
+
             
-        } 
-        else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
-            Horde[i].state = ANGRY;
-            
+                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) > 300) {
+                    printf("has reached target after jump\n");
+
+                    Horde[i].state = COOL;
+                    Horde[i].projectilePos = Horde[i].transform.pos;
+                    Horde[i].start = getTimeInSeconds();
+                }
+            } else if(Horde[i].state == COOL) {
+
+                float current = getTimeInSeconds();
+                Horde[i].elapsed = current - Horde[i].start;
+                
+                if(Horde[i].elapsed > Horde[i].cooldown) {
+                    printf("cooling ended, elapsed: %f \n", Horde[i].elapsed);
+                    Horde[i].elapsed = 0.0f;
+                    Horde[i].state = ANGRY;
+                    Horde[i].shooting = false;
+                } else {Horde[i].shooting = true;}
+
+            } else if(Horde[i].state == ANGRY) {
+                chase(Horde[i], p1, dt);
+
+                if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
+                    Horde[i].currentTarget = p1.transform.pos;
+                    Horde[i].state = JUMP;
+                }
+                
+            } 
+            else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
+                Horde[i].state = ANGRY;
+                
+            }
+
+            if(Horde[i].shooting) {
+                spit(Horde[i], Horde[i].currentTarget, dt);
+            }
         }
-        
         
     }
 }
@@ -170,12 +219,15 @@ void drawAlien(Alien &alien, bool active, float start) {
     // made changes to get size getting from transform
     drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
     drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
+    if(alien.shooting) {
+        fillCircle(alien.projectilePos, alien.projectileRad, Color::green);
+    }
 }
 
 
 
 // mature ALien -------------------------------------------------------------------------------------------------------------------------------
-bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
+/*bool addAlien(std::vector<AlienAdult> &Horde, Texture spritesheet) {
     AlienAdult alien;
 
     int wall = 0;
@@ -264,14 +316,14 @@ void jump(AlienAdult &alien, Vec2 target, float dt) {
 void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start) {
 
     for(int i = 0; i < Horde.size(); i++) {
-        //chase(Horde[i], p1, dt);
+
         Horde[i].transform.updateBoundingBox();
         if(Horde[i].state == JUMP) {
             jump(Horde[i], Horde[i].currentTarget, dt);
             //printf("is in jumping state\n");
             
             if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10) {
-                printf("has reached target after jump\n");
+                //printf("has reached target after jump\n");
                 Horde[i].hitbox = Vec2(80,80);
                 Horde[i].currentTarget = Vec2(0,0);
                 Horde[i].state = COOL;
@@ -468,4 +520,4 @@ void drawAlien(AlienRanged &alien, bool active, float start) {
         fillCircle(alien.projectilePos, alien.projectileRad, Color::green);
     }
 
-}
+}*/
