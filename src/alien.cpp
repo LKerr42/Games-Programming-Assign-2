@@ -36,15 +36,16 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             break;
         case MATURE:
             alien.transform.size = Vec2(80, 80);
-            alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {20, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {40, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
+            alien.texture = subTexture(spritesheet, {0, 0, 20, 20});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
+            
             break;
         case SPITTER:
             alien.transform.size = Vec2(60, 60);
-            alien.texture = subTexture(spritesheet, {0, 0, 60, 60});
+            alien.texture = subTexture(spritesheet, {0, 0, 20, 20});
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
             alien.animate.frames.push_back(subTexture(spritesheet, {20, 40, 20, 20}));
             alien.animate.frames.push_back(subTexture(spritesheet, {40, 40, 20, 20}));
@@ -208,14 +209,16 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
 
 void drawAlien(Alien &alien, bool active, float start) {
     if(active) {
+        //printf("inside draw animations \n");
         float current = getTimeInSeconds();
         float elapsed = current - start;
         int frameIndex = (elapsed / alien.animate.duration) * alien.animate.numFrames;
         frameIndex %= alien.animate.numFrames;
-        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
+        drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.transform.size/2, alien.transform.size, alien.transform.angle);
     } else {
         drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
     }
+    
     // made changes to get size getting from transform
     drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
     drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
