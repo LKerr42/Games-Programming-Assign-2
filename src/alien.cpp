@@ -10,7 +10,7 @@ Alien* alienCollision(Vec2 pos, Hero &p1) {
     
 }
 
-void wallCollisions(Alien &alien, std::vector<Rect> &walls) {
+bool wallCollisions(Alien &alien, std::vector<Rect> &walls) {
     bool CheckingCollision = false;
 
     for(int i = 0; i < walls.size(); i++) {
@@ -45,6 +45,7 @@ void wallCollisions(Alien &alien, std::vector<Rect> &walls) {
         }
 
     }
+    return CheckingCollision;
 }
 
 void laserCollision(Alien &alien, std::vector<Transform> &lasers) {
@@ -66,6 +67,17 @@ void laserCollision(Alien &alien, std::vector<Transform> &lasers) {
 
         }
     }
+}
+
+void heroCollision(Alien &alien, Hero &p1, float dt) {
+    Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
+    float targetAngle = atan2(toPlayer.y, toPlayer.x) / M_PI * 180.0f - 270;
+    alien.transform.angle = targetAngle;
+
+    alien.vel = toPlayer * - 200;
+    alien.transform.pos += alien.vel * dt;
+
+    p1.transform.pos += (toPlayer * 100) * dt;
 }
 
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
@@ -161,7 +173,7 @@ void jump(Alien &alien, Vec2 target, float dt) {
     int speed;
     if(alien.type == HATCHLING) {speed = 500;}
     if(alien.type == MATURE) {speed = 300; alien.hitbox = Vec2(80, 120);} 
-    if(alien.type == SPITTER) {speed = -700;}
+    if(alien.type == SPITTER) {speed = -600;}
 
     if(distance(alien.transform.pos, target) < 10) {
         alien.active = true;
@@ -190,10 +202,24 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
         wallCollisions(Horde[i], walls);
         laserCollision(Horde[i], lasers);
         if(Horde[i].health < 0) {
-            Horde.erase(Horde.begin() + (i+1));
+            Horde.erase(Horde.begin() + i);
+        }
+
+        if(collision(Horde[i].transform, p1.transform)) {
+            Horde[i].state = IMPULSE;
+            Horde[i].active = false;
+        }
+        if(Horde[i].state == IMPULSE) {
+            heroCollision(Horde[i], p1, dt);
+
+            if(distance(Horde[i].transform.pos, p1.transform.pos) > 150) {
+                Horde[i].state = COOL;
+                Horde[i].start = getTimeInSeconds();
+                Horde[i].active = true;
+            }
         }
         
-        if(Horde[i].type == HATCHLING || Horde[i].type == MATURE) {
+        else if(Horde[i].type == HATCHLING || Horde[i].type == MATURE) {
             if(Horde[i].state == JUMP) {
                 jump(Horde[i], Horde[i].currentTarget, dt);
                 //printf("is in jumping state\n");
@@ -234,7 +260,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
             jump(Horde[i], Horde[i].currentTarget, dt);
 
             
-                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) > 300) {
+                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) > 300 || wallCollisions(Horde[i], walls)) {
                     printf("has reached target after jump\n");
 
                     Horde[i].state = COOL;
@@ -270,6 +296,10 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
 
             if(Horde[i].shooting) {
                 spit(Horde[i], Horde[i].currentTarget, dt);
+                // bool collision(Vec2 pos1, float radius1, Vec2 pos2, Vec2 size2)
+                if(collision(Horde[i].projectilePos, Horde[i].projectileRad, p1.transform.pos, p1.transform.size)) {
+                    p1.health -= 25;
+                }
             }
         }
         

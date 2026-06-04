@@ -8,7 +8,7 @@
 #include <vector>
 #include <gameScene.h>
 
-enum STATE_ID {IDLE, ANGRY, FOLLOW, JUMP, COOL};
+enum STATE_ID {IDLE, ANGRY, IMPULSE, JUMP, COOL};
 enum AlienType {HATCHLING, MATURE, SPITTER};
 
 
@@ -112,8 +112,9 @@ struct Alien {
 // check collsions between aliens
 Alien* alienCollision(Vec2 pos, Hero &p1);
 
-void wallCollisions(Alien &alien, std::vector<Rect> &walls);
+bool wallCollisions(Alien &alien, std::vector<Rect> &walls);
 void laserCollision(Alien &alien, std::vector<Transform> &lasers);
+void heroCollision(Alien &alien, Hero &p1, float dt);
 
 // create new alien
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type);
