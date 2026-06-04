@@ -3,10 +3,69 @@
 #include <collisions.h>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 // hatchling -----------------------------------------------------------------------------------------------------
 Alien* alienCollision(Vec2 pos, Hero &p1) {
     
+}
+
+void wallCollisions(Alien &alien, std::vector<Rect> &walls) {
+    bool CheckingCollision = false;
+
+    for(int i = 0; i < walls.size(); i++) {
+        Rect wall1 = walls[i];
+
+            //bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float angle2)
+            Vec2 pos1 = Vec2(alien.transform.getBoundingBox().x, alien.transform.getBoundingBox().y);
+            Vec2 size1 = Vec2(alien.transform.getBoundingBox().width, alien.transform.getBoundingBox().height);
+            Vec2 pos2 = Vec2(wall1.x, wall1.y);
+            Vec2 size2 = Vec2(wall1.width, wall1.height);
+            CheckingCollision = collision(pos1, size1, 0, pos2, size2, 0);
+        
+        if(CheckingCollision) {
+            //printf("Alien box: %f, %f    Wall: %f, %f \n", pos1.x, pos1.y, pos2.x, pos2.y);
+            Rect alienBox = alien.transform.getBoundingBox();
+            float left = (alienBox.x + alienBox.width) - wall1.x;
+            float right = (wall1.x +  wall1.width) - alienBox.x;
+            float top = (alienBox.y + alienBox.height) - wall1.y;
+            float bottom = (wall1.y +  wall1.height) - alienBox.y;
+
+            float minOverlap = min(min(left, right), min(top, bottom));
+
+            if (minOverlap == left) {
+                alien.transform.translate(Vec2(-left, 0));
+            } else if (minOverlap == right) {
+                alien.transform.translate(Vec2(right, 0));
+            } else if (minOverlap == top) {
+                alien.transform.translate(Vec2(0, -top));
+            } else if (minOverlap == bottom) {
+                alien.transform.translate(Vec2(0, bottom));
+            }
+        }
+
+    }
+}
+
+void laserCollision(Alien &alien, std::vector<Transform> &lasers) {
+    bool collided = false;
+
+    for(int i = 0; i < lasers.size(); i++) {
+        Transform bullet = lasers[i];
+
+        /*Vec2 pos1 = Vec2(alien.transform.getBoundingBox().x, alien.transform.getBoundingBox().y);
+        Vec2 size1 = Vec2(alien.transform.getBoundingBox().width, alien.transform.getBoundingBox().height);
+        Vec2 pos2 = Vec2(bullet.pos.x, bullet.pos.y);
+        Vec2 size2 = bullet.getSize();*/
+        collided = collision(alien.transform, bullet);
+        if(collided) {
+            printf("bullet hit \n");
+            alien.health -= 100;
+            // temporary erase
+            lasers.erase(lasers.begin() + (i+1));
+
+        }
+    }
 }
 
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
@@ -28,28 +87,31 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
     switch(type) {
         case HATCHLING:
             alien.transform.size = Vec2(40,40);
-            alien.texture = subTexture(spritesheet, {0, 20, 20, 20});
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {20, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 20, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {40, 20, 20, 20}));
+            alien.texture = subTexture(spritesheet, {0, 70, 20, 20});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 70, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {20, 70, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 70, 20, 20}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 70, 20, 20}));
+            alien.health = 100;
             break;
         case MATURE:
             alien.transform.size = Vec2(80, 80);
-            alien.texture = subTexture(spritesheet, {0, 0, 20, 20});
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {20, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 20, 20}));
-            
+            alien.texture = subTexture(spritesheet, {0, 0, 40, 40});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {40, 0, 40, 40}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {80, 0, 40, 40}));
+            alien.health = 200;
             break;
         case SPITTER:
             alien.transform.size = Vec2(60, 60);
-            alien.texture = subTexture(spritesheet, {0, 0, 20, 20});
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {20, 40, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {40, 40, 20, 20}));
-            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 20, 20}));
+            alien.texture = subTexture(spritesheet, {0, 40, 30, 30});
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 30, 30}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {30, 40, 30, 30}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 30, 30}));
+            alien.animate.frames.push_back(subTexture(spritesheet, {60, 40, 30, 30}));
+            
+            alien.health = 150;
             break;
     }
 
@@ -120,11 +182,17 @@ void spit(Alien &alien, Vec2 target, float dt) {
     alien.projectilePos += alien.projectileVel * dt;
 }
 
-void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<Transform> &lasers, Hero &p1, float dt, float start) {
 
     
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
+        wallCollisions(Horde[i], walls);
+        laserCollision(Horde[i], lasers);
+        if(Horde[i].health < 0) {
+            Horde.erase(Horde.begin() + (i+1));
+        }
+        
         if(Horde[i].type == HATCHLING || Horde[i].type == MATURE) {
             if(Horde[i].state == JUMP) {
                 jump(Horde[i], Horde[i].currentTarget, dt);
@@ -196,6 +264,7 @@ void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start) {
             } 
             else if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionOuter) {
                 Horde[i].state = ANGRY;
+                //Horde[i].active = true;
                 
             }
 

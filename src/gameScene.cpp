@@ -46,6 +46,8 @@ namespace GameScene {
     float current;
 
     float start;
+    std::vector<Rect> wallInput;
+    std::vector<Transform> laserInput;
 
     void init() {
         setWindowTitle("Pest Control - Playing");
@@ -99,7 +101,12 @@ namespace GameScene {
         );
 
         //init aliens
-        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet.png");
+        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");
+
+        for(Wall a : walls) {
+            wallInput.push_back(a.rect);
+        }
+        
 
         addAlien(aliens, alienSpritesheet, HATCHLING);
         addAlien(aliens, alienSpritesheet, MATURE);
@@ -220,7 +227,11 @@ namespace GameScene {
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
             //update aliens
-            fsmAlien(aliens, hero, dt, current);
+            laserInput.clear();
+            for(Laser l : lasers) {
+                laserInput.push_back(l.transform);
+            }
+            fsmAlien(aliens, wallInput, laserInput, hero, dt, current);
             //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
             //fsmAlien(matureAliens, hero, dt, current);
             //fsmAlien(spitters, hero, dt, current);

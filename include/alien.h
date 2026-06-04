@@ -5,6 +5,8 @@
 #include <hero.h>
 #include <transform.h>
 #include <animations.h>
+#include <vector>
+#include <gameScene.h>
 
 enum STATE_ID {IDLE, ANGRY, FOLLOW, JUMP, COOL};
 enum AlienType {HATCHLING, MATURE, SPITTER};
@@ -84,6 +86,8 @@ struct Alien {
     Vec2 currentTarget = Vec2(0,0);
     Vec2 hitbox;
 
+    int health;
+
     float detecRadius;
     bool active;
 
@@ -108,6 +112,9 @@ struct Alien {
 // check collsions between aliens
 Alien* alienCollision(Vec2 pos, Hero &p1);
 
+void wallCollisions(Alien &alien, std::vector<Rect> &walls);
+void laserCollision(Alien &alien, std::vector<Transform> &lasers);
+
 // create new alien
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type);
 
@@ -129,7 +136,7 @@ void jump(Alien &alien, Vec2 target, float dt);
 void spit(Alien &alien, Vec2 target, float dt);
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<Alien> &Horde, Hero &p1, float dt, float start);
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<Transform> &lasers, Hero &p1, float dt, float start);
 //void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
 //void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
 
