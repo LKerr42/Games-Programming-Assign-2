@@ -61,7 +61,7 @@ void laserCollision(Alien &alien, std::vector<Transform> &lasers) {
         collided = collision(alien.transform, bullet);
         if(collided) {
             printf("bullet hit \n");
-            alien.health -= 100;
+            alien.health -= 25;
             // temporary erase
             lasers.erase(lasers.begin() + (i+1));
 
@@ -104,6 +104,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {20, 70, 20, 20}));
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 70, 20, 20}));
             alien.animate.frames.push_back(subTexture(spritesheet, {40, 70, 20, 20}));
+            alien.animate.duration = 0.3f;
             alien.health = 100;
             break;
         case MATURE:
@@ -114,6 +115,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 0, 40, 40}));
             alien.animate.frames.push_back(subTexture(spritesheet, {80, 0, 40, 40}));
             alien.health = 200;
+            alien.animate.duration = 0.75f;
             break;
         case SPITTER:
             alien.transform.size = Vec2(60, 60);
@@ -122,6 +124,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             alien.animate.frames.push_back(subTexture(spritesheet, {30, 40, 30, 30}));
             alien.animate.frames.push_back(subTexture(spritesheet, {0, 40, 30, 30}));
             alien.animate.frames.push_back(subTexture(spritesheet, {60, 40, 30, 30}));
+            alien.animate.duration = 0.5f;
             
             alien.health = 150;
             break;
@@ -131,7 +134,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
     alien.active = true;
 
     alien.animate.numFrames = 4;
-    alien.animate.duration = 0.5f;
+    //alien.animate.duration = 0.5f;
     alien.animate.start = getTimeInSeconds();
 
     Horde.push_back(alien);
@@ -312,6 +315,7 @@ void drawAlien(Alien &alien, bool active, float start) {
         float current = getTimeInSeconds();
         float elapsed = current - start;
         int frameIndex = (elapsed / alien.animate.duration) * alien.animate.numFrames;
+        //printf("Alien animation duration: %f", alien.animate.duration);
         frameIndex %= alien.animate.numFrames;
         drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.transform.size/2, alien.transform.size, alien.transform.angle);
     } else {
