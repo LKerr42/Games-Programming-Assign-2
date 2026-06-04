@@ -208,8 +208,11 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
             Horde.erase(Horde.begin() + i);
         }
 
-        if(collision(Horde[i].transform, p1.transform)) {
+        if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
             Horde[i].state = IMPULSE;
+            if(Horde[i].type == HATCHLING) {p1.health -= 5;}
+            if(Horde[i].type == SPITTER) {p1.health -= 10;}
+            if(Horde[i].type == MATURE) {p1.health -= 20;}
             Horde[i].active = false;
         }
         if(Horde[i].state == IMPULSE) {
@@ -319,7 +322,7 @@ void drawAlien(Alien &alien, bool active, float start) {
         frameIndex %= alien.animate.numFrames;
         drawTexture(alien.animate.frames[frameIndex], alien.transform.pos - alien.transform.size/2, alien.transform.size, alien.transform.angle);
     } else {
-        drawTexture(alien.texture, alien.transform.pos - alien.size/2, alien.size, alien.transform.angle);
+        drawTexture(alien.texture, alien.transform.pos - alien.transform.size/2, alien.transform.size, alien.transform.angle);
     }
     
     // made changes to get size getting from transform
