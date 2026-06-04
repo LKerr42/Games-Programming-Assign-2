@@ -69,7 +69,7 @@ namespace GameScene {
         lazerHit = loadAnimation("./assets/images/laser_hit_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 0.5f, false);
         
         //init Hud
-        hudBase = loadTexture("./assets/images/hud_base.png");
+        hudBase = loadTexture("./assets/images/hud_base_v2.png");
         float hudWidth = 128 * 8, hudHeight = 72 * 8;
         hudDest = (Rect){0, 0, hudWidth, hudHeight};
 
@@ -396,9 +396,10 @@ namespace GameScene {
 
         //overlay display
         if (currentDisplay == HUD) {
-            drawTexture(hudBase, hudDest);
+            
 
             //health bar
+            fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(256, 24), Color::red);
             Color healthCol = (hero.health > 50) ? Color::green : Color::red;
             float healthBarWidth = 256 * (hero.health / 100);
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(healthBarWidth, 24), healthCol);
@@ -407,6 +408,9 @@ namespace GameScene {
             float energyPercentage = (hero.currWeapon->currEnergy / hero.currWeapon->fullEnergy);
             float energyBarWidth = 192 * energyPercentage;
             fillRect(Vec2(20*HUD_PIXEL_SIZE, 12*HUD_PIXEL_SIZE), Vec2(energyBarWidth, 16), (Color){66, 135, 245, 255});
+
+            drawTexture(hudBase, hudDest);
+            
 
             //inventory
             if (hero.currWeapon != nullptr) drawTexture(*hero.currWeapon->smallTexture, (Rect){24, 24*HUD_PIXEL_SIZE, 40, 40});
