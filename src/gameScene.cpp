@@ -66,6 +66,7 @@ namespace GameScene {
         loadLaserShoot(soundFX, "./assets/Soundfx/laserSound/freesound_community-laser-45816.mp3");
         loadLaserHit(soundFX, "./assets/Soundfx/laserSound/universfield-blaster-shot-229313.mp3");
         loadAlienSounds(soundFX, "./assets/Soundfx/laserSound/freesound_community-alien-xenomorph-hissing-and-growling-with-and-without-fx-22773.mp3");
+        loadHurtSound(soundFX, "./assets/Soundfx/laserSound/homemade_sfx-slap-hurt-pain-sound-effect-262618.mp3");
 
 
         //init hero

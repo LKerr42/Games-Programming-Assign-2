@@ -17,7 +17,7 @@ void loadAlienSounds(audioClips &audio, char *noises) {
 }
 
 void playLaserShoot(audioClips &audio) {
-    playOnce(audio.laserShoot);
+    playOnce(audio.laserShoot, 0.4f);
 }
 
 void playLaserHit(audioClips &audio) {
@@ -30,4 +30,12 @@ void playAlienSounds(audioClips &audio) {
 
 void stopAlienSounds(audioClips &audio) {
     stopAudio(audio.AlienSounds);
+}
+
+void loadHurtSound(audioClips &audio, char *hurt) {
+    audio.Hurt = loadAudioClip(hurt);
+}
+
+void playHurtSound(audioClips &audio) {
+    playOnce(audio.Hurt, 0.3f);
 }

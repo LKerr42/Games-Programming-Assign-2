@@ -128,6 +128,8 @@ void heroCollision(Alien &alien, Hero &p1, float dt) {
     alien.transform.pos += alien.vel * dt;
 
     p1.transform.pos += (toPlayer * 100) * dt;
+
+    
 }
 
 bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
@@ -267,6 +269,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<G
 
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
             Horde[i].state = IMPULSE;
+            playHurtSound(audioObject);
             if(Horde[i].type == HATCHLING) {p1.health -= 5;}
             if(Horde[i].type == SPITTER) {p1.health -= 10;}
             if(Horde[i].type == MATURE) {p1.health -= 20;}
@@ -276,6 +279,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<G
             heroCollision(Horde[i], p1, dt);
 
             if(distance(Horde[i].transform.pos, p1.transform.pos) > 150) {
+                
                 Horde[i].state = COOL;
                 Horde[i].start = getTimeInSeconds();
                 Horde[i].active = true;

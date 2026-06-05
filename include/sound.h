@@ -7,6 +7,7 @@ struct audioClips {
     AudioClip laserShoot;
     AudioClip laserHit;
     AudioClip AlienSounds;
+    AudioClip Hurt;
 };
 
 void loadLaserShoot(audioClips &audio, char *shoot);
@@ -14,6 +15,10 @@ void loadLaserShoot(audioClips &audio, char *shoot);
 void loadLaserHit(audioClips &audio, char *hit);
 
 void loadAlienSounds(audioClips &audio, char *noises);
+
+void loadHurtSound(audioClips &audio, char *hurt);
+
+void playHurtSound(audioClips &audio);
 
 
 void playLaserShoot(audioClips &audio);
