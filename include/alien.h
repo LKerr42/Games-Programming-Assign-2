@@ -6,6 +6,7 @@
 #include <transform.h>
 #include <animations.h>
 #include <vector>
+#include <sound.h>
 //#include <gameScene.h>
 
 namespace GameScene {
@@ -51,7 +52,7 @@ struct Alien {
 void alienCollision(std::vector<Alien> &Horde);
 
 bool wallCollisions(Alien &alien, std::vector<Rect> &walls);
-void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers);
+void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers, audioClips &audioObject);
 void heroCollision(Alien &alien, Hero &p1, float dt);
 
 // create new alien
@@ -75,7 +76,7 @@ void jump(Alien &alien, Vec2 target, float dt);
 void spit(Alien &alien, Vec2 target, float dt);
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, float dt, float start);
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start);
 //void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
 //void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
 

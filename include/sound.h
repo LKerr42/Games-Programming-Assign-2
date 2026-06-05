@@ -16,13 +16,13 @@ void loadLaserHit(audioClips audio, char *hit);
 void loadAlienSounds(audioClips audio, char *noises);
 
 
-void playLaserShoot(audioClips audio);
+void playLaserShoot(audioClips &audio);
 
-void playLaserHit(audioClips audio);
+void playLaserHit(audioClips &audio);
 
-void playAlienSounds(audioClips audio);
+void playAlienSounds(audioClips &audio);
 
-void stopAlienSounds(audioClips audio);
+void stopAlienSounds(audioClips &audio);
 
 
 #endif

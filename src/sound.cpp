@@ -16,18 +16,18 @@ void loadAlienSounds(audioClips audio, char *noises) {
     audio.AlienSounds = loadAudioClip(noises);
 }
 
-void playLaserShoot(audioClips audio) {
+void playLaserShoot(audioClips &audio) {
     playOnce(audio.laserShoot);
 }
 
-void playLaserHit(audioClips audio) {
-    playOnce(audio.laserHit);
+void playLaserHit(audioClips &audio) {
+    playOnce(audio.laserHit, 1.0f);
 }
 
-void playAlienSounds(audioClips audio) {
-    playAudio(audio.AlienSounds);
+void playAlienSounds(audioClips &audio) {
+    playAudio(audio.AlienSounds, 1.0f, true);
 }
 
-void stopAlienSounds(audioClips audio) {
+void stopAlienSounds(audioClips &audio) {
     stopAudio(audio.AlienSounds);
 }

@@ -149,7 +149,10 @@ namespace GameScene {
         products[5] = (upgradePurchase){5, 100, 1, "speed"};
 
         //init aliens
-        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");    
+        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");  
+        
+        addAlien(aliens, alienSpritesheet, MATURE);
+        aliens[0].transform.pos = Vec2(1000, halfWindowHeight);
         
         //init waves
         activateTimer(&waveCooldown, 15.0f, false, false);
@@ -161,6 +164,7 @@ namespace GameScene {
     }
 
     void update(float dt) {
+        playAlienSounds(soundFX);
         if (currentDisplay == HUD) {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) {
@@ -297,7 +301,7 @@ namespace GameScene {
             for(Laser l : lasers) {
                 laserInput.push_back(l.transform);
             }*/
-            fsmAlien(aliens, wallInput, lasers, hero, dt, current);
+            fsmAlien(aliens, wallInput, lasers, hero, soundFX, dt, current);
             //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
             //fsmAlien(matureAliens, hero, dt, current);
             //fsmAlien(spitters, hero, dt, current);

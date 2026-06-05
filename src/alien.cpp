@@ -97,7 +97,7 @@ bool wallCollisions(Alien &alien, std::vector<Rect> &walls) {
     return CheckingCollision;
 }
 
-void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers) {
+void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers, audioClips &audioObject) {
     bool collided = false;
 
     for(int i = 0; i < lasers.size(); i++) {
@@ -112,6 +112,7 @@ void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers) {
         if(collided) {
             printf("bullet hit \n");
             alien.health -= 25;
+            playLaserHit(audioObject);
             deleteLazer(bullet, i);
 
         }
@@ -249,14 +250,14 @@ void spit(Alien &alien, Vec2 target, float dt) {
     alien.projectilePos += alien.projectileVel * dt;
 }
 
-void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, float dt, float start) {
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start) {
 
     //alienCollision(Horde);
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
         
         wallCollisions(Horde[i], walls);
-        laserCollision(Horde[i], lasers);
+        laserCollision(Horde[i], lasers, audioObject);
         if(Horde[i].health <= 0) {
             Horde.erase(Horde.begin() + i);
             if(Horde[i].type == HATCHLING) {p1.credits += 20;}
