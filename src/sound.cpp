@@ -25,7 +25,7 @@ void playLaserHit(audioClips &audio) {
 }
 
 void playAlienSounds(audioClips &audio) {
-    playAudio(audio.AlienSounds, 1.0f, true);
+    playAudio(audio.AlienSounds, 0.5f, true);
 }
 
 void stopAlienSounds(audioClips &audio) {

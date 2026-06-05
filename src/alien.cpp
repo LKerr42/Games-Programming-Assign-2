@@ -115,6 +115,8 @@ void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers, audioCl
             playLaserHit(audioObject);
             deleteLazer(bullet, i);
 
+            
+
         }
     }
 }
