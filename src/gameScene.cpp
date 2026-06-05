@@ -606,6 +606,7 @@ namespace GameScene {
 
     bool attemptPurchase(upgradePurchase& purchase, float& data, float updateVal) {
         //remove credits
+        hero.credits =- purchase.cost;
 
         //update data
         data += updateVal;
