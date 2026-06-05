@@ -215,8 +215,8 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
 
 void chase(Alien &alien, Hero &p1, float dt) {
     int speed;
-    if(alien.type == HATCHLING) speed = 100;
-    if(alien.type == MATURE || alien.type == SPITTER) speed = 80;
+    if(alien.type == HATCHLING) speed = 120;
+    if(alien.type == MATURE || alien.type == SPITTER) speed = 100;
 
     Vec2 toPlayer = unit(p1.transform.pos - alien.transform.pos);
 
@@ -231,7 +231,7 @@ void chase(Alien &alien, Hero &p1, float dt) {
 
 void jump(Alien &alien, Vec2 target, float dt) {
     int speed;
-    if(alien.type == HATCHLING) {speed = 500;}
+    if(alien.type == HATCHLING) {speed = 550;}
     if(alien.type == MATURE) {speed = 300; alien.hitbox = Vec2(80, 120);} 
     if(alien.type == SPITTER) {speed = -600;}
 
