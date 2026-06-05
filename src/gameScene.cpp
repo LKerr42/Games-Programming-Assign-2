@@ -56,6 +56,8 @@ namespace GameScene {
     std::vector<Rect> wallInput;
     std::vector<Transform> laserInput;
 
+    bool playAliens = false;
+
     void init() {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
@@ -161,10 +163,21 @@ namespace GameScene {
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
+        
     }
 
     void update(float dt) {
-        playAlienSounds(soundFX);
+    
+        if(!aliens.empty() && playAliens == false) {
+            playAlienSounds(soundFX);
+            playAliens = true;
+        }
+        if(aliens.empty()) {
+            playAliens = false;
+            stopAlienSounds(soundFX);
+        }
+
+        //playAudio(soundFX.AlienSounds, 0.5f, true);
         if (currentDisplay == HUD) {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) {
@@ -189,6 +202,7 @@ namespace GameScene {
                     cooldownStr = std::to_string((int)(15 - SDL_floor(waveCooldown.elasped)));
                     displayCountdown = true;
                 }
+                
             }
 
             //debug

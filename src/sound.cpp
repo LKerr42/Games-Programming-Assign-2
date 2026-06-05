@@ -21,7 +21,7 @@ void playLaserShoot(audioClips &audio) {
 }
 
 void playLaserHit(audioClips &audio) {
-    playOnce(audio.laserHit, 1.0f);
+    playOnce(audio.laserHit, 0.5f);
 }
 
 void playAlienSounds(audioClips &audio) {
