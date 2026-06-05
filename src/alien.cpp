@@ -35,8 +35,10 @@ void alienCollision(std::vector<Alien> &Horde) {
             Vec2 size2 = Vec2(a2->transform.getBoundingBox().width, a2->transform.getBoundingBox().height);
 
             if(collision(pos1, size1, 0, pos2, size2, 0)) {
+
                 printf("Horde[%i].pos: %f, %f  Horde[%i].pos: %f, %f\n", i, j,  Horde[i].transform.getBoundingBox().x, Horde[i].transform.getBoundingBox().y, Horde[j].transform.getBoundingBox().x, Horde[i].transform.getBoundingBox().y);
                 printf("alien[%i].pos: %f, %f  alien[%i].pos: %f, %f\n", i, j, aliens[i]->transform.getBoundingBox().x, aliens[i]->transform.getBoundingBox().y, aliens[j]->transform.getBoundingBox().x, aliens[j]->transform.getBoundingBox().y);
+                
                 Rect alienBox = a1->transform.getBoundingBox();
                 float left = (alienBox.x + alienBox.width) - a2->transform.getBoundingBox().x;
                 float right = (a2->transform.getBoundingBox().x +  a2->transform.getBoundingBox().width) - alienBox.x;
@@ -255,7 +257,7 @@ void spit(Alien &alien, Vec2 target, float dt) {
 }
 
 void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start) {
-    alienCollision(Horde);
+    //alienCollision(Horde);
     //alienCollision(Horde);
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
@@ -272,9 +274,9 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<G
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
             Horde[i].state = IMPULSE;
             playHurtSound(audioObject);
-            if(Horde[i].type == HATCHLING) {p1.health -= 5;}
-            if(Horde[i].type == SPITTER) {p1.health -= 10;}
-            if(Horde[i].type == MATURE) {p1.health -= 20;}
+            if(Horde[i].type == HATCHLING) {p1.health -= (5 - (p1.currArmour->resistance / 5));}
+            if(Horde[i].type == SPITTER) {p1.health -= (10  - (p1.currArmour->resistance / 5));}
+            if(Horde[i].type == MATURE) {p1.health -= (20 - (p1.currArmour->resistance / 5));}
             Horde[i].active = false;
         }
         if(Horde[i].state == IMPULSE) {
