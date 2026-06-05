@@ -167,6 +167,10 @@ namespace GameScene {
         start = getTimeInSeconds();
 
         std::cout << hero.health << "\n";
+
+        //play music
+        loadMusic(soundFX, "./assets/Soundfx/Hang_On.mp3");
+        playAudio(soundFX.music, 1, true);
     }
 
     void update(float dt) {

@@ -2,7 +2,9 @@
 #include <engine.h>
 #include <iostream>
 
-
+void loadMusic(audioClips &audio, char *music) {
+    audio.music = loadAudioClip(music);
+}
 
 void loadLaserShoot(audioClips &audio, char *shoot) {
     audio.laserShoot = loadAudioClip(shoot);
