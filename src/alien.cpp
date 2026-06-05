@@ -4,10 +4,58 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <gameScene.h>
 
 // hatchling -----------------------------------------------------------------------------------------------------
-Alien* alienCollision(Vec2 pos, Hero &p1) {
-    
+void alienCollision(std::vector<Alien> &Horde) {
+    std::vector<Alien*> aliens;
+
+    for(Alien a : Horde) {
+        Alien *b = &a;
+        aliens.push_back(b);
+    }
+
+    /*std:sort(aliens.begin(), aliens.end(), [](const auto &a, const auto &b){
+        if(a->transform.getBoundingBox().x != b->transform.getBoundingBox().x) return a->transform.getBoundingBox().x < b->transform.getBoundingBox().x;
+    });*/
+
+    for(int i = 0; i < aliens.size(); i++) {
+        Alien *a1 = aliens[i];
+        for(int j = i + 1; j < aliens.size(); j++) {
+            Alien *a2 = aliens[j];
+
+            if(a2->transform.getBoundingBox().x > a1->transform.getBoundingBox().x + a1->transform.getBoundingBox().width) break;
+
+            // bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float angle2)
+
+            Vec2 pos1 = Vec2(a1->transform.getBoundingBox().x, a1->transform.getBoundingBox().y);
+            Vec2 size1 = Vec2(a1->transform.getBoundingBox().width, a1->transform.getBoundingBox().height);
+            Vec2 pos2 = Vec2(a2->transform.getBoundingBox().x, a2->transform.getBoundingBox().y);
+            Vec2 size2 = Vec2(a2->transform.getBoundingBox().width, a2->transform.getBoundingBox().height);
+
+            if(collision(pos1, size1, 0, pos2, size2, 0)) {
+                printf("Horde[i].pos: %f, %f  Horde[j].pos: %f, %f\n", Horde[i].transform.getBoundingBox().x, Horde[i].transform.getBoundingBox().y, Horde[j].transform.getBoundingBox().x, Horde[i].transform.getBoundingBox().y);
+                printf("alien[i].pos: %f, %f  alien[j].pos: %f, %f\n", aliens[i]->transform.getBoundingBox().x, aliens[i]->transform.getBoundingBox().y, aliens[j]->transform.getBoundingBox().x, aliens[j]->transform.getBoundingBox().y);
+                Rect alienBox = a1->transform.getBoundingBox();
+                float left = (alienBox.x + alienBox.width) - a2->transform.getBoundingBox().x;
+                float right = (a2->transform.getBoundingBox().x +  a2->transform.getBoundingBox().width) - alienBox.x;
+                float top = (alienBox.y + alienBox.height) - a2->transform.getBoundingBox().y;
+                float bottom = (a2->transform.getBoundingBox().y +  a2->transform.getBoundingBox().height) - alienBox.y;
+
+                float minOverlap = min(min(left, right), min(top, bottom));
+
+                if (minOverlap == left) {
+                    a1->transform.translate(Vec2(-left, 0));
+                } else if (minOverlap == right) {
+                    a1->transform.translate(Vec2(right, 0));
+                } else if (minOverlap == top) {
+                    a1->transform.translate(Vec2(0, -top));
+                } else if (minOverlap == bottom) {
+                    a1->transform.translate(Vec2(0, bottom));
+                }
+            }
+        }
+    }
 }
 
 bool wallCollisions(Alien &alien, std::vector<Rect> &walls) {
@@ -48,22 +96,22 @@ bool wallCollisions(Alien &alien, std::vector<Rect> &walls) {
     return CheckingCollision;
 }
 
-void laserCollision(Alien &alien, std::vector<Transform> &lasers) {
+void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers) {
     bool collided = false;
 
     for(int i = 0; i < lasers.size(); i++) {
-        Transform bullet = lasers[i];
+        GameScene::Laser &bullet = lasers[i];
 
         /*Vec2 pos1 = Vec2(alien.transform.getBoundingBox().x, alien.transform.getBoundingBox().y);
         Vec2 size1 = Vec2(alien.transform.getBoundingBox().width, alien.transform.getBoundingBox().height);
         Vec2 pos2 = Vec2(bullet.pos.x, bullet.pos.y);
         Vec2 size2 = bullet.getSize();*/
-        collided = collision(alien.transform, bullet);
+        //bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float angle2);
+        collided = collision(alien.transform.pos - alien.transform.size/2, alien.transform.size, alien.transform.angle, bullet.transform.pos - bullet.transform.size/2, bullet.transform.size, bullet.transform.angle);
         if(collided) {
             printf("bullet hit \n");
             alien.health -= 25;
-            // temporary erase
-            lasers.erase(lasers.begin() + (i+1));
+            deleteLazer(bullet, i);
 
         }
     }
@@ -200,11 +248,12 @@ void spit(Alien &alien, Vec2 target, float dt) {
     alien.projectilePos += alien.projectileVel * dt;
 }
 
-void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<Transform> &lasers, Hero &p1, float dt, float start) {
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, float dt, float start) {
 
-    
+    //alienCollision(Horde);
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
+        
         wallCollisions(Horde[i], walls);
         laserCollision(Horde[i], lasers);
         if(Horde[i].health < 0) {
@@ -253,6 +302,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<T
                 // time setter to wait or chase -- after timer if in range jump again
             } else if(Horde[i].state == ANGRY) {
                 chase(Horde[i], p1, dt);
+
                 //printf("is in chase state\n");
                 if(distance(Horde[i].transform.pos, p1.transform.pos) < p1.detectionInner) {
                     Horde[i].currentTarget = p1.transform.pos;

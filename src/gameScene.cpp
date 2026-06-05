@@ -227,11 +227,11 @@ namespace GameScene {
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
             //update aliens
-            laserInput.clear();
+            /*laserInput.clear();
             for(Laser l : lasers) {
                 laserInput.push_back(l.transform);
-            }
-            fsmAlien(aliens, wallInput, laserInput, hero, dt, current);
+            }*/
+            fsmAlien(aliens, wallInput, lasers, hero, dt, current);
             //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
             //fsmAlien(matureAliens, hero, dt, current);
             //fsmAlien(spitters, hero, dt, current);

@@ -6,77 +6,15 @@
 #include <transform.h>
 #include <animations.h>
 #include <vector>
-#include <gameScene.h>
+//#include <gameScene.h>
+
+namespace GameScene {
+    class Laser;
+}
 
 enum STATE_ID {IDLE, ANGRY, IMPULSE, JUMP, COOL};
 enum AlienType {HATCHLING, MATURE, SPITTER};
 
-
-/*struct AlienAdult {
-
-    AlienType type;
-
-    Transform transform;
-    Vec2 vel;
-    Vec2 size;
-    Vec2 currentTarget = Vec2(0,0);
-    Vec2 hitbox;
-    float detecRadius;
-    bool active;
-
-    float start = 0.0f;
-    float elapsed = 0.0f;
-    float cooldown = 2;
-    
-
-    Texture texture;
-    Animation animate;
-
-    STATE_ID state;
-};
-
-struct Alien {
-    Transform transform;
-    Vec2 vel;
-    Vec2 size;
-    Vec2 currentTarget = Vec2(0,0);
-
-    float detecRadius;
-    bool active;
-
-    float start = 0.0f;
-    float elapsed = 0.0f;
-    float cooldown = 2;
-
-    Texture texture;
-    Animation animate;
-
-    STATE_ID state;
-};
-
-struct AlienRanged {
-    Transform transform;
-    Vec2 vel;
-    Vec2 size;
-    Vec2 currentTarget = Vec2(0,0);
-
-    float detecRadius;
-    bool active;
-
-    Vec2 projectilePos;
-    Vec2 projectileVel;
-    float projectileRad = 10;
-    bool shooting;
-
-    float start = 0.0f;
-    float elapsed = 0.0f;
-    float cooldown = 1;
-
-    Texture texture;
-    Animation animate;
-
-    STATE_ID state;
-};*/
 
 struct Alien {
     AlienType type;
@@ -110,10 +48,10 @@ struct Alien {
 
 
 // check collsions between aliens
-Alien* alienCollision(Vec2 pos, Hero &p1);
+void alienCollision(std::vector<Alien> &Horde);
 
 bool wallCollisions(Alien &alien, std::vector<Rect> &walls);
-void laserCollision(Alien &alien, std::vector<Transform> &lasers);
+void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers);
 void heroCollision(Alien &alien, Hero &p1, float dt);
 
 // create new alien
@@ -137,7 +75,7 @@ void jump(Alien &alien, Vec2 target, float dt);
 void spit(Alien &alien, Vec2 target, float dt);
 
 // Finite state machine controller - remember state
-void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<Transform> &lasers, Hero &p1, float dt, float start);
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, float dt, float start);
 //void fsmAlien(std::vector<AlienAdult> &Horde, Hero &p1, float dt, float start);
 //void fsmAlien(std::vector<AlienRanged> &Horde, Hero &p1, float dt, float start);
 
