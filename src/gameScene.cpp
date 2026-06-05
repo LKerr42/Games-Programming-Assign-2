@@ -69,7 +69,6 @@ namespace GameScene {
         loadAlienSounds(soundFX, "./assets/Soundfx/laserSound/freesound_community-alien-xenomorph-hissing-and-growling-with-and-without-fx-22773.mp3");
         loadHurtSound(soundFX, "./assets/Soundfx/laserSound/homemade_sfx-slap-hurt-pain-sound-effect-262618.mp3");
 
-
         //init hero
         hero.tex = loadTexture("./assets/images/hero.png");
         hero.health = 100;
@@ -126,6 +125,8 @@ namespace GameScene {
         walls.emplace_back(WINDOW_WIDTH-200, 0);
         walls.emplace_back(0, WINDOW_HEIGHT-200);
         walls.emplace_back(WINDOW_WIDTH-200, WINDOW_HEIGHT-200);
+        walls.emplace_back(400, 300);
+        walls.emplace_back(900, 300);
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
 
@@ -316,7 +317,7 @@ namespace GameScene {
                     displayingDialogue = true;
                     collisionCount++;
 
-                    if (keyPressedThisFrame(KEY_E)) {
+                    if (keyReleasedThisFrame(KEY_E)) {
                         (*ele)->pickup(hero, currentDisplay, currentDisplayElement);
                     }
                 } 
