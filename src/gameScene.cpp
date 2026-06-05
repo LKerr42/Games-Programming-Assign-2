@@ -12,6 +12,7 @@ namespace GameScene {
 
     Timer waveCooldown;
     int waveCounter;
+    int numH, numM, numS;
 
     std::string cooldownStr;
     bool displayCountdown;
@@ -156,9 +157,6 @@ namespace GameScene {
         //init aliens
         alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");  
         
-        addAlien(aliens, alienSpritesheet, MATURE);
-        aliens[0].transform.pos = Vec2(1000, halfWindowHeight);
-        
         //init waves
         activateTimer(&waveCooldown, 10.0f, false, false);
         displayCountdown = false;
@@ -202,9 +200,16 @@ namespace GameScene {
                     waveCounter++;
 
                     //addAlien(aliens, alienSpritesheet, HATCHLING);
-                    int numH;
-                    int numM;
-                    int numS;
+                    numH++;
+                    if (numH == 6) {
+                        numH = 1;
+                        numM++;
+                    }
+                    if (numM == 6) {
+                        numM = 1;
+                        numS++;
+                    }
+
                     addAliensForWave(numH, numM, numS, waveCounter);
                     //std::cout << "Spawn more aliens\n";
                 } else if (waveCooldown.active) {
@@ -318,68 +323,10 @@ namespace GameScene {
             }
             if (collisionCount == 0) displayingDialogue = false;
 
-            //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
-
             //update aliens
             wallInput.clear();
             for(Wall l : walls) {wallInput.push_back(l.pos);}
             fsmAlien(aliens, wallInput, lasers, hero, soundFX, dt, current);
-            //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
-            //fsmAlien(matureAliens, hero, dt, current);
-            //fsmAlien(spitters, hero, dt, current);
-
-            //check updates to shadows
-            // Vec2 tip = hero.transform.getPosition(LOCAL);
-            // float angleRad = hero.transform.angle * M_PI / 180.0f;
-            // float length = hero.sightLength;
-            // float spread = 30.0f;
-
-            // float leftRad  = angleRad - spread * M_PI / 180.0f;
-            // float rightRad = angleRad + spread * M_PI / 180.0f;
-
-            // hero.sightLeft = Vec2(
-            //     tip.x + cos(leftRad) * length,
-            //     tip.y + sin(leftRad) * length
-            // );
-
-            // hero.sightRight = Vec2(
-            //     tip.x + cos(rightRad) * length,
-            //     tip.y + sin(rightRad) * length
-            // );
-
-            // int minX = (min(tip.x, min(hero.sightLeft.x, hero.sightRight.x))) / 20;
-            // int maxX = (max(tip.x, max(hero.sightLeft.x, hero.sightRight.x))) / 20;
-
-            // int minY = (min(tip.y, min(hero.sightLeft.y, hero.sightRight.y))) / 20;
-            // int maxY = (max(tip.y, max(hero.sightLeft.y, hero.sightRight.y))) / 20;
-
-            // for (int i = minY; i < maxY; i++) {
-            //     for (int j = minX; j < maxX; j++) {
-            //         if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
-            //             continue;
-            //         }
-
-            //         if (pointInTriangle(Vec2(j*20, i*20), hero.transform.getPosition(LOCAL), hero.sightLeft, hero.sightRight)) {
-            //             shadows[i][j] = 0;
-            //         }
-            //     }
-            // }
-
-            // int sightRadShadows = SDL_round(hero.sightRad / 20);
-            // Vec2 HeroPosShadows = Vec2(SDL_round(hero.transform.getPosition().x / 20), SDL_round(hero.transform.getPosition().y / 20));
-
-            // for (int i = HeroPosShadows.y - sightRadShadows; i < HeroPosShadows.y + sightRadShadows; i++) {
-            //     for (int j = HeroPosShadows.x - sightRadShadows; j < HeroPosShadows.x + sightRadShadows + 2; j++) {
-            //         if (i < 0 || j < 0 || i >= windowHeightShadows || j >= windowWidthShadows) {
-            //             continue;
-            //         }
-            //         if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
-            //                 Vec2(j*20, i*20), Vec2(20, 20))) {
-            //             shadows[i][j] = 0;
-            //         }
-            //     }
-            // }
-
         } else if (currentDisplay == ELEMENT) {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
@@ -671,11 +618,6 @@ namespace GameScene {
     }
 
     void addAliensForWave(int numHatching, int numMature, int numSpitter, int waveNum) {
-        if (waveNum % 5 == 0) {
-            addAlien(aliens, alienSpritesheet, SPITTER);
-            return;
-        }
-
         for (int i = 0; i < numHatching; i++) {
             addAlien(aliens, alienSpritesheet, HATCHLING);
         }
