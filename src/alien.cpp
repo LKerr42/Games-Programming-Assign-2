@@ -5,6 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <gameScene.h>
+#include <sound.h>
 
 // hatchling -----------------------------------------------------------------------------------------------------
 void alienCollision(std::vector<Alien> &Horde) {

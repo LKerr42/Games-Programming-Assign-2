@@ -5,6 +5,8 @@
 namespace GameScene {
     Font pressStart;
 
+    audioClips soundFX;
+
     Hero hero;
     std::vector<Alien> aliens;
 
@@ -58,6 +60,10 @@ namespace GameScene {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
         background = loadTexture("assets/images/background.png");
+
+        loadLaserShoot(soundFX, "./assets/Soundfx/laserSound/freesound_community-laser-45816.mp3");
+        loadLaserHit(soundFX, "./assets/Soundfx/laserSound/universfield-blaster-shot-229313.mp3");
+        loadAlienSounds(soundFX, "./assets/Soundfx/laserSound/freesound_community-alien-xenomorph-hissing-and-growling-with-and-without-fx-22773.mp3");
 
 
         //init hero

@@ -9,6 +9,7 @@
 #include <transform.h>
 #include <hero.h>
 #include <alien.h>
+#include <sound.h>
 
 #include <iostream>
 #include <vector>
