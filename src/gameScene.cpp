@@ -430,6 +430,7 @@ namespace GameScene {
 
         //hero
         drawTexture(hero.tex, hero.transform.getPosition(), hero.transform.getSize(), hero.transform.getAngle());
+        std::string creditStr = "Credits: " + std::to_string(hero.credits);
 
         if (displayingDialogue) {
             displayDialogue(currDialogue);
@@ -474,6 +475,9 @@ namespace GameScene {
             Color col = ((int)(15 - SDL_floor(waveCooldown.elasped)) > 5) ? Color::white : Color::red;
             drawText(Vec2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), cooldownStr.c_str(), col, pressStart, 32, 0.0f);
         }
+
+        //pre-hud
+        drawText(Vec2(1100, 0), creditStr.c_str(), Color::yellow, pressStart, 16);
 
         //Shadows
         // for (int i = 0; i < 36; i++) {
