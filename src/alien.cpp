@@ -115,7 +115,7 @@ void laserCollision(Alien &alien, std::vector<GameScene::Laser> &lasers, audioCl
             playLaserHit(audioObject);
             deleteLazer(bullet, i);
 
-            
+
 
         }
     }
@@ -255,7 +255,7 @@ void spit(Alien &alien, Vec2 target, float dt) {
 }
 
 void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start) {
-
+    //printf("Hero health: %f \n", p1.health);
     //alienCollision(Horde);
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
@@ -272,9 +272,11 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<G
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
             Horde[i].state = IMPULSE;
             playHurtSound(audioObject);
+            printf("Hero health before impact: %f \n", p1.health);
             if(Horde[i].type == HATCHLING) {p1.health -= 5;}
             if(Horde[i].type == SPITTER) {p1.health -= 10;}
             if(Horde[i].type == MATURE) {p1.health -= 20;}
+            printf("Hero health after impact: %f \n", p1.health);
             Horde[i].active = false;
         }
         if(Horde[i].state == IMPULSE) {
