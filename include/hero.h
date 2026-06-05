@@ -18,6 +18,8 @@ class Hero {
         float detectionOuter;
         float detectionInner;
 
+        int credits;
+
         Weapon *currWeapon; 
         Armour *currArmour;
         Upgrade *currUpgrade;
