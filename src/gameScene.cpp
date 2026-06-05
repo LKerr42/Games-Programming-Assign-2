@@ -94,6 +94,11 @@ namespace GameScene {
             (Rect){500, WINDOW_HEIGHT-40, 60, 40}, "'E' to open", OPEN_WORKBENCH, nullptr
         ));
 
+        elements.emplace_back(new Element(
+            new Animation(loadAnimation("./assets/images/items/heal_station.png", (Rect){0, 0, 30, 20}, 3, 3.0f, true)), 
+            (Rect){700, WINDOW_HEIGHT-40, 60, 40}, "'E' to heal (100c)", HEAL_HERO, nullptr
+        ));
+
         wallTexture = loadTexture("./assets/images/wall.png");
 
         //init other animations
