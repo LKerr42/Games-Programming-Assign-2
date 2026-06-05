@@ -64,16 +64,16 @@ namespace GameScene {
         hero.tex = loadTexture("./assets/images/hero.png");
 
         hero.currWeapon = new Weapon(
-            new Texture(loadTexture("./assets/images/items/weapon_small_01.png")),
+            new Texture(loadTexture("./assets/images/items/weapon_small.png")),
             0.25f, 2.0f, 100
         ); 
 
         hero.currArmour = new Armour(
-            new Texture(loadTexture("./assets/images/items/armour_small_01.png")),
+            new Texture(loadTexture("./assets/images/items/armour_small.png")),
             100, 100
         ); 
         hero.currUpgrade = new Upgrade(
-            new Texture(loadTexture("./assets/images/items/upgrade_small_01.png")),
+            new Texture(loadTexture("./assets/images/items/upgrade_small.png")),
             NONE, 0.0f, 0
         );
 
