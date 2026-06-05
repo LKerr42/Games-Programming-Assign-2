@@ -49,7 +49,8 @@ namespace GameScene {
     enum DisplayState : int {
         HUD,
         ELEMENT,
-        WORKBENCH
+        WORKBENCH,
+        DEATH
     };
 
     void init();

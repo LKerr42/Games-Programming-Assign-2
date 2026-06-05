@@ -379,7 +379,7 @@ namespace GameScene {
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
 
             runButton(displayElementExit);
-        } else {
+        } else if (currentDisplay == WORKBENCH) {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
 
@@ -400,6 +400,13 @@ namespace GameScene {
             } else if (keyReleasedThisFrame(KEY_6)) { //upgrade
                 attemptPurchase(products[5], hero.speed, products[5].value);
             } 
+        } else {
+            //check for display updates
+            if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
+
+            runButton(displayElementExit);
+
+            
         }
     }
 
