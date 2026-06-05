@@ -71,6 +71,7 @@ namespace GameScene {
 
         //init hero
         hero.tex = loadTexture("./assets/images/hero.png");
+        hero.health = 100;
 
         hero.currWeapon = new Weapon(
             new Texture(loadTexture("./assets/images/items/weapon_small.png")),
@@ -402,11 +403,11 @@ namespace GameScene {
             } 
         } else {
             //check for display updates
-            if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
-
-            runButton(displayElementExit);
-
-            
+            if (keyPressedThisFrame(KEY_KP_ENTER)) {
+                hero.health = 100;
+                hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
+                currentDisplay = HUD;
+            }
         }
     }
 
@@ -533,7 +534,7 @@ namespace GameScene {
             drawTexture(*currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
 
             renderButton(displayElementExit);
-        } else {
+        } else if (currentDisplay == WORKBENCH) {
             float sizeX, sizeY;
             SDL_GetTextureSize(workbenchBackground.texture, &sizeX, &sizeY);
             sizeX *= 5;
@@ -571,6 +572,10 @@ namespace GameScene {
             drawText(topLeftCorner + Vec2(0, 400), purchaseInfo[5].c_str(), Color::white, pressStart, 32);
 
             renderButton(displayElementExit);
+        } else {
+            fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
+
+            drawText(Vec2(0, 0), "You Died! Press enter to resume", Color::white, pressStart, 64);
         }
     }
 
