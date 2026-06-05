@@ -63,22 +63,22 @@ bool wallCollisions(Alien &alien, std::vector<Vec2> &walls) {
     bool CheckingCollision = false;
 
     for(int i = 0; i < walls.size(); i++) {
-        Rect wall1 = walls[i];
+        Vec2 wall1 = walls[i];
 
             //bool collision(Vec2 pos1, Vec2 size1, float angle1, Vec2 pos2, Vec2 size2, float angle2)
             Vec2 pos1 = Vec2(alien.transform.getBoundingBox().x, alien.transform.getBoundingBox().y);
             Vec2 size1 = Vec2(alien.transform.getBoundingBox().width, alien.transform.getBoundingBox().height);
             Vec2 pos2 = Vec2(wall1.x, wall1.y);
-            Vec2 size2 = Vec2(wall1.width, wall1.height);
-            CheckingCollision = collision(pos1, size1, 0, pos2, size2, 0);
+            //Vec2 size2 = Vec2(wall1.width, wall1.height);
+            CheckingCollision = collision(pos1, size1, 0, pos2, Vec2(40,40), 0);
         
         if(CheckingCollision) {
             //printf("Alien box: %f, %f    Wall: %f, %f \n", pos1.x, pos1.y, pos2.x, pos2.y);
             Rect alienBox = alien.transform.getBoundingBox();
             float left = (alienBox.x + alienBox.width) - wall1.x;
-            float right = (wall1.x +  wall1.width) - alienBox.x;
+            float right = (wall1.x +  40) - alienBox.x;
             float top = (alienBox.y + alienBox.height) - wall1.y;
-            float bottom = (wall1.y +  wall1.height) - alienBox.y;
+            float bottom = (wall1.y +  40) - alienBox.y;
 
             float minOverlap = min(min(left, right), min(top, bottom));
 
@@ -260,7 +260,7 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<G
     for(int i = 0; i < Horde.size(); i++) {
         Horde[i].transform.updateBoundingBox();
         
-        wallCollisions(Horde[i], walls);
+        Horde[i].wallC = wallCollisions(Horde[i], walls);
         laserCollision(Horde[i], lasers, audioObject);
         if(Horde[i].health <= 0) {
             Horde.erase(Horde.begin() + i);
@@ -293,8 +293,9 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<G
                 jump(Horde[i], Horde[i].currentTarget, dt);
                 //printf("is in jumping state\n");
                 
-                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10) {
+                if(distance(Horde[i].transform.pos, Horde[i].currentTarget) < 10 || Horde[i].wallC == true) {
                     //printf("has reached target after jump\n");
+                    Horde[i].wallC = false;
                     if(Horde[i].type == MATURE) {Horde[i].hitbox = Vec2(80,80);}
                     Horde[i].currentTarget = Vec2(0,0);
                     Horde[i].state = COOL;

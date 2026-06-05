@@ -35,6 +35,8 @@ struct Alien {
     float projectileRad = 10;
     bool shooting;
 
+    bool wallC;
+
     float start = 0.0f;
     float elapsed = 0.0f;
     float cooldown = 2;
