@@ -256,8 +256,11 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<G
         
         wallCollisions(Horde[i], walls);
         laserCollision(Horde[i], lasers);
-        if(Horde[i].health < 0) {
+        if(Horde[i].health <= 0) {
             Horde.erase(Horde.begin() + i);
+            if(Horde[i].type == HATCHLING) {p1.credits += 20;}
+            if(Horde[i].type == SPITTER) {p1.credits += 30;}
+            if(Horde[i].type == MATURE) {p1.credits += 50;}
         }
 
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
