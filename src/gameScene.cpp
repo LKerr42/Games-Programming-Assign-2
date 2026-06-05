@@ -91,14 +91,14 @@ namespace GameScene {
 
         //init elements
         static DisplayElement messageElement = (DisplayElement){
-            "Hmm... a new message", 
+            "Press 'G' to start defending", 
             32,
             new Texture(loadTexture("./assets/images/message_large.png"))
         };
 
         elements.emplace_back(new Element(
             new Animation(loadAnimation("./assets/images/items/message_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true)), 
-            (Rect){600, WINDOW_HEIGHT-40, 40, 40}, "'E' to read", SHOW_DISPLAY, &messageElement
+            (Rect){100, WINDOW_HEIGHT-40, 40, 40}, "'E' to read", SHOW_DISPLAY, &messageElement
         ));
 
         elements.emplace_back(new Element(
@@ -377,7 +377,6 @@ namespace GameScene {
 
         //hero
         drawTexture(hero.tex, hero.transform.getPosition(), hero.transform.getSize(), hero.transform.getAngle());
-        std::string creditStr = "Credits: " + std::to_string(hero.credits);
 
         if (displayingDialogue) {
             displayDialogue(currDialogue);
@@ -424,7 +423,11 @@ namespace GameScene {
         }
 
         //pre-hud
-        drawText(Vec2(1100, 0), creditStr.c_str(), Color::yellow, pressStart, 16);
+        std::string creditStr = "Credits: " + std::to_string(hero.credits);
+        drawText(Vec2(1050, 0), creditStr.c_str(), Color::yellow, pressStart, 16);
+
+        std::string waveStr = "Wave: " + std::to_string(waveCounter);
+        drawText(Vec2(1050, 30), waveStr.c_str(), Color::white, pressStart, 16);
 
         //overlay display
         if (currentDisplay == HUD) {
