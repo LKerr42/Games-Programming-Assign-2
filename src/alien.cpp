@@ -274,9 +274,10 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<G
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {
             Horde[i].state = IMPULSE;
             playHurtSound(audioObject);
-            if(Horde[i].type == HATCHLING) {p1.health -= (5 - (p1.currArmour->resistance / 5));}
-            if(Horde[i].type == SPITTER) {p1.health -= (10  - (p1.currArmour->resistance / 5));}
-            if(Horde[i].type == MATURE) {p1.health -= (20 - (p1.currArmour->resistance / 5));}
+            int resistance = (p1.currArmour->resistance / 5);
+            if(Horde[i].type == HATCHLING) {p1.health -= (5 - resistance);}
+            if(Horde[i].type == SPITTER) {p1.health -= (10  - resistance);}
+            if(Horde[i].type == MATURE) {p1.health -= (20 - resistance);}
             Horde[i].active = false;
         }
         if(Horde[i].state == IMPULSE) {
