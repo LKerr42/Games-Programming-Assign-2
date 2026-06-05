@@ -63,6 +63,9 @@ void Element::pickup(Hero& hero, GameScene::DisplayState& currDisplay, GameScene
             break;
         }
         case HEAL_HERO: {
+            if (hero.credits < 100) {
+                break;
+            }
             hero.health = 100;
             hero.credits =- 100;
             break;
