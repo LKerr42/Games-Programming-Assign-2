@@ -265,6 +265,7 @@ namespace GameScene {
                 lasers.emplace_back();
                 hero.currWeapon->currEnergy -= 10;
                 resetTimer(hero.currWeapon->fireTimer);
+                playLaserShoot(soundFX);
             }
 
             for (int i = 0; i < lasers.size();) {
