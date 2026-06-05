@@ -269,6 +269,10 @@ void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<G
             if(Horde[i].type == HATCHLING) {p1.credits += 20;}
             if(Horde[i].type == SPITTER) {p1.credits += 30;}
             if(Horde[i].type == MATURE) {p1.credits += 50;}
+
+            if (p1.credits > 100) {
+                p1.credits = 100;
+            }
         }
 
         if(collision(Horde[i].transform, p1.transform) && Horde[i].state != IMPULSE) {

@@ -587,9 +587,6 @@ namespace GameScene {
         if (purchase.indx == 3 && data > 25) {
             data = 25;
         }
-
-        //update purchase struct
-        purchase.cost += 20;
         
         return true;
     }
