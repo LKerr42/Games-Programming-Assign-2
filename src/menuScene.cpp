@@ -3,13 +3,13 @@
 namespace MenuScene {
     Font pressStart;
     std::vector<Button> buttons;
+    Texture background;
 
     void init() {
         setWindowTitle("Pest Control - Menu");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
         Texture buttonBackground = loadTexture("./assets/images/button_pink.png");
-        SDL_SetTextureScaleMode(buttonBackground.texture, SDL_SCALEMODE_NEAREST);
-
+        background = loadTexture("./assets/images/backgrounM.png");
 
         buttons.push_back(createButton(
             Vec2((WINDOW_WIDTH/2), 500), Vec2(10, 10), "PLay Game", pressStart, 25.0f, Color::black, Color::white, START, buttonBackground
@@ -46,6 +46,7 @@ namespace MenuScene {
 
     void render(float lag) {
         clear((Color){50, 50, 50, 255});
+        drawTexture(background, Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT));
         Vec2 titleSize = measureText("PEST CONTROL", pressStart, 40);
 
         drawText(Vec2((WINDOW_WIDTH/2)-(titleSize.x/2), 100), "PEST CONTROL", (Color){219, 0, 172, 255}, pressStart, 40);
