@@ -171,6 +171,10 @@ namespace GameScene {
     }
 
     void update(float dt) {
+        if (hero.health <= 0) {
+            currentDisplay = DEATH;
+        }
+
         if(!aliens.empty() && playAliens == false) {
             playAlienSounds(soundFX);
             playAliens = true;
@@ -404,8 +408,11 @@ namespace GameScene {
             } 
         } else {
             //check for display updates
-            if (keyPressedThisFrame(KEY_KP_ENTER)) {
+            if (keyPressedThisFrame(KEY_RETURN)) {
                 hero.health = 100;
+                waveCounter = 0;
+                aliens.clear();
+                hero.transform.pos = Vec2(150, WINDOW_HEIGHT/2.0f);
                 hero.currWeapon->currEnergy = hero.currWeapon->fullEnergy;
                 currentDisplay = HUD;
             }
@@ -501,8 +508,6 @@ namespace GameScene {
 
         //overlay display
         if (currentDisplay == HUD) {
-            
-
             //health bar
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(256, 24), Color::red);
             //Color healthCol = (hero.health > 50) ? Color::green : Color::red;
@@ -577,7 +582,7 @@ namespace GameScene {
         } else {
             fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
 
-            drawText(Vec2(0, 0), "You Died! Press enter to resume", Color::white, pressStart, 64);
+            drawText(Vec2(0, 0), "You Died! Press enter to resume", Color::white, pressStart, 32);
         }
     }
 
