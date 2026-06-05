@@ -72,6 +72,7 @@ namespace GameScene {
         //init hero
         hero.tex = loadTexture("./assets/images/hero.png");
         hero.health = 100;
+        std::cout << hero.health << "\n";
 
         hero.currWeapon = new Weapon(
             new Texture(loadTexture("./assets/images/items/weapon_small.png")),
@@ -165,11 +166,11 @@ namespace GameScene {
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
-        
+
+        std::cout << hero.health << "\n";
     }
 
     void update(float dt) {
-        printf("Hero health: %f\n", hero.health);
         if(!aliens.empty() && playAliens == false) {
             playAlienSounds(soundFX);
             playAliens = true;
@@ -505,8 +506,9 @@ namespace GameScene {
             //health bar
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(256, 24), Color::red);
             //Color healthCol = (hero.health > 50) ? Color::green : Color::red;
-            //printf("Hero health: %f\n", hero.health);
-            float healthBarWidth = 256 * (hero.health / 100);
+            
+            float healthBarWidth = 256.0f * (hero.health / 100.0f);
+            //std::cout << healthBarWidth << " ";
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(healthBarWidth, 24), Color::green);
 
             drawTexture(hudBase, hudDest);
