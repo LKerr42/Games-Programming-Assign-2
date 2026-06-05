@@ -67,7 +67,7 @@ void Element::pickup(Hero& hero, GameScene::DisplayState& currDisplay, GameScene
                 break;
             }
             hero.health = 100;
-            hero.credits =- 100;
+            hero.credits = 0;
             break;
         }
     }
