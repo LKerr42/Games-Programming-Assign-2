@@ -4,15 +4,15 @@
 
 
 
-void loadLaserShoot(audioClips audio, char *shoot) {
+void loadLaserShoot(audioClips &audio, char *shoot) {
     audio.laserShoot = loadAudioClip(shoot);
 }
 
-void loadLaserHit(audioClips audio, char *hit) {
+void loadLaserHit(audioClips &audio, char *hit) {
     audio.laserHit = loadAudioClip(hit); 
 }
 
-void loadAlienSounds(audioClips audio, char *noises) {
+void loadAlienSounds(audioClips &audio, char *noises) {
     audio.AlienSounds = loadAudioClip(noises);
 }
 

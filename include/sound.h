@@ -9,11 +9,11 @@ struct audioClips {
     AudioClip AlienSounds;
 };
 
-void loadLaserShoot(audioClips audio, char *shoot);
+void loadLaserShoot(audioClips &audio, char *shoot);
 
-void loadLaserHit(audioClips audio, char *hit);
+void loadLaserHit(audioClips &audio, char *hit);
 
-void loadAlienSounds(audioClips audio, char *noises);
+void loadAlienSounds(audioClips &audio, char *noises);
 
 
 void playLaserShoot(audioClips &audio);
