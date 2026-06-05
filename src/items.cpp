@@ -63,6 +63,7 @@ void Element::pickup(Hero& hero, GameScene::DisplayState& currDisplay, GameScene
             break;
         }
         case HEAL_HERO: {
+            hero.health = 100;
             break;
         }
     }

@@ -24,6 +24,7 @@ namespace GameScene {
     Rect hudDest;
     Button displayElementExit;
     DisplayElement currentDisplayElement;
+    Texture workbenchBackground;
     
     int shadows[36][64];
     Texture wallTexture;
@@ -116,6 +117,7 @@ namespace GameScene {
         //init display elements
         static Texture pausedTex = loadTexture("./assets/images/paused_splash.png");
         Texture buttonBackground = loadTexture("./assets/images/button_pink.png");
+        workbenchBackground = loadTexture("./assets/images/workbench_background.png");
 
         pausedElement = (DisplayElement){
             "Paused",
@@ -128,7 +130,6 @@ namespace GameScene {
         );
 
         //init products
-        //init products
         products[0] = (upgradePurchase){0, 100, 5, "total energy"};
         products[1] = (upgradePurchase){1, 100, 5, "firing speed"};
         products[2] = (upgradePurchase){2, 100, 5, "reload speed"};
@@ -137,7 +138,12 @@ namespace GameScene {
         products[5] = (upgradePurchase){5, 100, 1, "speed"};
 
         //init aliens
-        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");        
+        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");    
+        
+        //init waves
+        activateTimer(&waveCooldown, 15.0f, false, false);
+        displayCountdown = false;
+        cooldownStr = "15";
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
@@ -151,7 +157,7 @@ namespace GameScene {
                 currentDisplayElement = pausedElement;
             }
 
-            //chech for wave updates
+            //check for wave updates
             if (aliens.empty() && gameIsActive) { //countdown once the horde is empty
                 waveCooldown.active = true;
 
@@ -417,12 +423,10 @@ namespace GameScene {
             drawAlien(a, a.active, start);
         }
 
-        /*for (AlienAdult a : matureAliens) {
-            drawAlien(a, a.active, start);
+        if (displayCountdown) {
+            Color col = ((int)(15 - SDL_floor(waveCooldown.elasped)) > 5) ? Color::white : Color::red;
+            drawText(Vec2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), cooldownStr.c_str(), col, pressStart, 32, 0.0f);
         }
-        for (AlienRanged a : spitters) {
-            drawAlien(a, a.active, start);
-        }*/
 
         //Shadows
         // for (int i = 0; i < 36; i++) {
@@ -471,15 +475,12 @@ namespace GameScene {
             float energyPercentage = (hero.currWeapon->currEnergy / hero.currWeapon->fullEnergy);
             float energyBarWidth = 192 * energyPercentage;
             fillRect(Vec2(20*HUD_PIXEL_SIZE, 12*HUD_PIXEL_SIZE), Vec2(energyBarWidth, 16), (Color){66, 135, 245, 255});
-
             
-            
-
             //inventory
             if (hero.currWeapon != nullptr) drawTexture(*hero.currWeapon->smallTexture, (Rect){24, 24*HUD_PIXEL_SIZE, 40, 40});
             if (hero.currArmour != nullptr) drawTexture(*hero.currArmour->smallTexture, (Rect){24, 32*HUD_PIXEL_SIZE, 40, 40});
             if (hero.currUpgrade != nullptr) drawTexture(*hero.currUpgrade->smallTexture, (Rect){24, 40*HUD_PIXEL_SIZE, 40, 40});
-        } else {
+        } else if (currentDisplay == ELEMENT) {
             float sizeX, sizeY;
             SDL_GetTextureSize(currentDisplayElement.mainTexture->texture, &sizeX, &sizeY);
             Vec2 displayTexturesize = Vec2(sizeX, sizeY);
@@ -491,6 +492,44 @@ namespace GameScene {
             fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
             drawText(Vec2(0, 0), currentDisplayElement.dialogue, Color::white, pressStart, currentDisplayElement.fontSize);
             drawTexture(*currentDisplayElement.mainTexture, displayTexturePos, displayTexturesize);
+
+            renderButton(displayElementExit);
+        } else {
+            float sizeX, sizeY;
+            SDL_GetTextureSize(workbenchBackground.texture, &sizeX, &sizeY);
+            sizeX *= 5;
+            sizeY *= 5;
+            Vec2 displayTexturesize = Vec2(sizeX, sizeY);
+            Vec2 displayTexturePos = Vec2(
+                WINDOW_WIDTH/2 - sizeX/2,
+                WINDOW_HEIGHT/2 - sizeY/2
+            );
+            Vec2 topLeftCorner = displayTexturePos + Vec2(30,30);
+
+            fillRect(Vec2(0, 0), Vec2(WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0, 0, 128U, 0.0f);
+            drawText(Vec2(0, 0), "Workbench, enter no. to upgrade", Color::white, pressStart, 32);
+            drawTexture(workbenchBackground, displayTexturePos, displayTexturesize);
+
+            //strings
+            std::string purchaseInfo[6];
+            for (int i = 0; i < 6; i++) {
+                purchaseInfo[i] = "(" + std::to_string(i+1) + "): " + std::to_string(products[i].cost) + "c ... " + "+" + std::to_string((int)products[i].value) + " " + products[i].title;
+            }
+
+            //Weapon
+            drawText(topLeftCorner + Vec2(0, 0), "Weapon:-", Color::green, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 50), purchaseInfo[0].c_str(), Color::white, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 100), purchaseInfo[1].c_str(), Color::white, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 150), purchaseInfo[2].c_str(), Color::white, pressStart, 32);
+
+            //Armour
+            drawText(topLeftCorner + Vec2(0, 200), "Armour:-", Color::green, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 250), purchaseInfo[3].c_str(), Color::white, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 300), purchaseInfo[4].c_str(), Color::white, pressStart, 32);
+
+            //upgrade
+            drawText(topLeftCorner + Vec2(0, 350), "Upgrade:-", Color::green, pressStart, 32);
+            drawText(topLeftCorner + Vec2(0, 400), purchaseInfo[5].c_str(), Color::white, pressStart, 32);
 
             renderButton(displayElementExit);
         }
@@ -568,9 +607,9 @@ namespace GameScene {
 
         //update purchase struct
         purchase.cost += 20;
-        if (purchase.indx != 5) {
-            purchase.value += 5;
-        }
+        // if (purchase.indx != 5) {
+        //     purchase.value += 5;
+        // }
         
         return true;
     }
