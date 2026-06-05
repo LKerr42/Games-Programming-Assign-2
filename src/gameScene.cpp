@@ -82,7 +82,7 @@ namespace GameScene {
 
         hero.currArmour = new Armour(
             new Texture(loadTexture("./assets/images/items/armour_small.png")),
-            100, 100
+            5, 100
         ); 
         hero.currUpgrade = new Upgrade(
             new Texture(loadTexture("./assets/images/items/upgrade_small.png")),
@@ -581,6 +581,9 @@ namespace GameScene {
 
         //update data
         data += updateVal;
+        if (purchase.indx == 3 && data > 25) {
+            data = 25;
+        }
 
         //update purchase struct
         purchase.cost += 20;
