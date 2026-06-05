@@ -11,7 +11,7 @@ namespace GameScene {
     std::vector<Alien> aliens;
 
     Timer waveCooldown;
-    int waveCounter;
+    int waveCounter = 8;
     int numH, numM, numS;
 
     std::string cooldownStr;
@@ -76,7 +76,7 @@ namespace GameScene {
 
         hero.currWeapon = new Weapon(
             new Texture(loadTexture("./assets/images/items/weapon_small.png")),
-            0.5f, 2.0f, 100
+            0.2f, 2.0f, 100
         ); 
 
         hero.currArmour = new Armour(
@@ -204,8 +204,9 @@ namespace GameScene {
                     displayCountdown = false;
                     waveCounter++;
 
-                    //addAlien(aliens, alienSpritesheet, HATCHLING);
-                    numH++;
+                    numS = 2;
+                    numH = 3;
+                    numM = 3;
                     if (numH == 6) {
                         numH = 1;
                         numM++;
@@ -585,7 +586,7 @@ namespace GameScene {
         }
 
         //remove credits
-        hero.credits =- purchase.cost;
+        hero.credits = 0;
 
         //update data
         data += updateVal;
