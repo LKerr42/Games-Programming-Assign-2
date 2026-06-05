@@ -505,7 +505,7 @@ namespace GameScene {
             //health bar
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(256, 24), Color::red);
             //Color healthCol = (hero.health > 50) ? Color::green : Color::red;
-            
+            printf("Hero health: %f\n", hero.health);
             float healthBarWidth = 256 * (hero.health / 100);
             fillRect(Vec2(22*HUD_PIXEL_SIZE, 5*HUD_PIXEL_SIZE), Vec2(healthBarWidth, 24), Color::green);
 
