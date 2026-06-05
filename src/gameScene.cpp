@@ -77,7 +77,7 @@ namespace GameScene {
 
         hero.currWeapon = new Weapon(
             new Texture(loadTexture("./assets/images/items/weapon_small.png")),
-            0.25f, 2.0f, 100
+            0.5f, 2.0f, 100
         ); 
 
         hero.currArmour = new Armour(
@@ -98,7 +98,7 @@ namespace GameScene {
 
         elements.emplace_back(new Element(
             new Animation(loadAnimation("./assets/images/items/message_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true)), 
-            (Rect){500, halfWindowHeight, 40, 40}, "'E' to read", SHOW_DISPLAY, &messageElement
+            (Rect){600, WINDOW_HEIGHT-40, 40, 40}, "'E' to read", SHOW_DISPLAY, &messageElement
         ));
 
         elements.emplace_back(new Element(
@@ -148,8 +148,8 @@ namespace GameScene {
 
         //init products
         products[0] = (upgradePurchase){0, 100, 5, "total energy"};
-        products[1] = (upgradePurchase){1, 100, 5, "firing speed"};
-        products[2] = (upgradePurchase){2, 100, 5, "reload speed"};
+        products[1] = (upgradePurchase){1, 100, 0.1, "firing speed"};
+        products[2] = (upgradePurchase){2, 100, 0.1, "reload speed"};
         products[3] = (upgradePurchase){3, 100, 5, "resistance"};
         products[4] = (upgradePurchase){4, 100, 5, "health"};
         products[5] = (upgradePurchase){5, 100, 1, "speed"};
@@ -426,37 +426,6 @@ namespace GameScene {
         //pre-hud
         drawText(Vec2(1100, 0), creditStr.c_str(), Color::yellow, pressStart, 16);
 
-        //Shadows
-        // for (int i = 0; i < 36; i++) {
-        //     for (int j = 0; j < 64; j++) {
-        //         Color currCol;
-        //         if (shadows[i][j] != 0) {
-        //             if (shadows[i][j] == 1) {
-        //                 currCol = (Color){37, 37, 75};
-        //             } else if (shadows[i][j] == 2) {
-        //                 currCol = (Color){25, 25, 50};
-        //             } else if (shadows[i][j] == 3) {
-        //                 currCol = (Color){12, 12, 25};
-        //             } else if (shadows[i][j] == 4) {
-        //                 currCol = (Color){7, 7, 15};
-        //             } else {
-        //                 currCol = (Color){2, 2, 5};
-        //             }
-        //             fillRect(Vec2(j*20, i*20), Vec2(20, 20), currCol);
-        //         }
-        //     }
-        // }
-
-        //debug 
-        // -- TODO: remove before submition --
-        drawCircle(hero.transform.getPosition(LOCAL), hero.sightRad, (Color){255, 128, 0, 255});
-        drawRect(hero.transform.getBoundingBox(), Color::red, 0.0f);
-        drawRect(hero.transform.getPosition(), hero.transform.getSize(), Color::green, hero.transform.getAngle());
-
-        //debug detection radius
-        drawCircle(hero.transform.getPosition(LOCAL), hero.detectionInner, Color::red);
-        drawCircle(hero.transform.getPosition(LOCAL), hero.detectionOuter, Color::green);
-
         //overlay display
         if (currentDisplay == HUD) {
             //health bar
@@ -511,7 +480,8 @@ namespace GameScene {
             //strings
             std::string purchaseInfo[6];
             for (int i = 0; i < 6; i++) {
-                purchaseInfo[i] = "(" + std::to_string(i+1) + "): " + std::to_string(products[i].cost) + "c ... " + "+" + std::to_string((int)products[i].value) + " " + products[i].title;
+                int visibleVal = (products[i].value < 1) ? 1 : products[i].value;
+                purchaseInfo[i] = "(" + std::to_string(i+1) + "): " + std::to_string(products[i].cost) + "c ... " + "+" + std::to_string(visibleVal) + " " + products[i].title;
             }
 
             //Weapon
@@ -602,6 +572,10 @@ namespace GameScene {
     }
 
     bool attemptPurchase(upgradePurchase& purchase, float& data, float updateVal) {
+        if (hero.credits < purchase.cost) {
+            return false;
+        }
+
         //remove credits
         hero.credits =- purchase.cost;
 
@@ -610,9 +584,6 @@ namespace GameScene {
 
         //update purchase struct
         purchase.cost += 20;
-        // if (purchase.indx != 5) {
-        //     purchase.value += 5;
-        // }
         
         return true;
     }
