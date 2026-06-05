@@ -11,6 +11,7 @@ class Hero {
         Texture tex;
         Transform transform;
         int health;
+        float speed;
         Vec2 sightLeft, sightRight;
         float sightRad;
         float sightLength;

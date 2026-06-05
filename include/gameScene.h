@@ -26,7 +26,10 @@ namespace GameScene {
     };
 
     typedef struct Wall {
-        Rect rect;
+        Vec2 pos;
+        const Vec2 size = Vec2(40, 40);
+
+        Wall(float x, float y) {pos = Vec2(x, y);};
     } Wall;
 
     typedef struct DisplayElement {
@@ -35,15 +38,17 @@ namespace GameScene {
         Texture* mainTexture;
     } DisplayElement;
 
-    enum Level : int {
-        LEVEL_ONE,
-        LEVEL_TWO,
-        LEVEL_THREE
-    };
+    typedef struct upgradePurchase {
+        int indx;
+        int cost;
+        float value;
+        char* title;
+    } upgradePurchase;
 
     enum DisplayState : int {
         HUD,
-        ELEMENT
+        ELEMENT,
+        WORKBENCH
     };
 
     void init();
@@ -54,10 +59,12 @@ namespace GameScene {
     void displayDialogue(const char *msg);
     void setupShadows();
     void smoothShadows();
-    void initWalls();
+    void runButton(Button &b);
+    bool attemptPurchase(upgradePurchase& purchase, float& data, float updateVal);
+
+    void addAliensForWave(int numHatching, int numMature, int numSpitter, int waveNum);
 
     void handleCollision(Rect collidingWith);
-
     bool pointInTriangle(Vec2 p, Vec2 a, Vec2 b, Vec2 c);
 
     void deleteLazer(Laser& L, int indx);

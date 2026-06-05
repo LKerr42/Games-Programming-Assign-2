@@ -11,7 +11,6 @@
 namespace GameScene {
     typedef struct DisplayElement DisplayElement;
     enum DisplayState : int;
-    enum Level : int;
 }
 
 class Hero;
@@ -24,21 +23,20 @@ enum UpgradeType {
     LONGER_SIGHT
 };
 
+enum ElementAction {
+    SHOW_DISPLAY,
+    OPEN_WORKBENCH,
+    START_HORDE,
+    HEAL_HERO
+};
+
 // -- polymorphic items -
 class Item {
     public:
         Texture *smallTexture;
-        Animation *animationLarge;
-        Rect dst;
-        char *hoverDialogue;
 
-        Item(Animation *largeA, Texture *small, Rect d, char *hd) 
-                : animationLarge(largeA), smallTexture(small), dst(d), hoverDialogue(hd) {
-            dst.width = dst.height = 40;
-        };
+        Item(Texture *small) : smallTexture(small) {};
 
-        virtual void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) = 0;
-        virtual Item* dropItem(Hero& hero) = 0;
         virtual ~Item() = default;
 };
 
@@ -47,20 +45,14 @@ class Weapon : public Item {
         float currEnergy, fullEnergy;
         Timer *fireTimer, *reloadTimer;
 
-        Weapon(Animation *largeA, Texture *small, Rect d, char *hd, float fs, float rs, float fe);
-
-        void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) override;
-        Item* dropItem(Hero& hero) override;
+        Weapon(Texture *small, float fs, float rs, float fe);
 };
 
 class Armour : public Item {
     public:
         float resistance, healthUpgrade;
 
-        Armour(Animation *largeA, Texture *small, Rect d, char *hd, float r, float hu);
-
-        void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) override;
-        Item* dropItem(Hero& hero) override;
+        Armour(Texture *small, float r, float hu);
 };
 
 class Upgrade : public Item {
@@ -69,37 +61,21 @@ class Upgrade : public Item {
         Timer *cooldown;
         float value;
 
-        Upgrade(Animation *largeA, Texture *small, Rect d, char *hd, UpgradeType t, float cds, float v);
-
-        void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) override;
-        Item* dropItem(Hero& hero) override;
+        Upgrade(Texture *small, UpgradeType t, float cds, float v);
 };
 
 class Element : public Item {
     public:
-        GameScene::DisplayElement *element;
+        Animation *animate;
+        char* hoverDialogue;
+        ElementAction action;
+        Rect dst;
 
-        Element(Animation *largeA, Rect d, char *hd, GameScene::DisplayElement *de);
+        GameScene::DisplayElement *display;
 
-        void pickup(Hero& hero, GameScene::DisplayState *currDisplay, GameScene::DisplayElement *currElement) override;
-        Item* dropItem(Hero& hero) override;
+        Element(Animation *A, Rect d, char *hd, ElementAction a, GameScene::DisplayElement *de);
+
+        void pickup(Hero& hero, GameScene::DisplayState& currDisplay, GameScene::DisplayElement& currElement);
 };
-
-
-// -- init --
-typedef struct ItemDefinition {
-    Texture *smallTexture;
-    Animation *animationLarge;
-    std::vector<float> data;
-    Rect dst;
-
-    GameScene::DisplayElement* ele;
-    UpgradeType upType;
-
-    char* title;
-} ItemDefinition;
-
-void loadDefinitions();
-void loadLevel(GameScene::Level toLoad, std::list<Item*>& itemsList);
 
 #endif

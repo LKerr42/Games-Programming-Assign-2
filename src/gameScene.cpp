@@ -7,8 +7,13 @@ namespace GameScene {
 
     Hero hero;
     std::vector<Alien> aliens;
-    //std::vector<AlienAdult> matureAliens;
-    //std::vector<AlienRanged> spitters;
+
+    Timer waveCooldown;
+    int waveCounter;
+
+    std::string cooldownStr;
+    bool displayCountdown;
+    bool gameIsActive = false;
 
     Texture alienSpritesheet;
 
@@ -21,19 +26,18 @@ namespace GameScene {
     DisplayElement currentDisplayElement;
     
     int shadows[36][64];
+    Texture wallTexture;
 
-    bool levelOneWalls[36][64];
-    bool levelTwoWalls[36][64];
-    bool levelThreeWalls[36][64];
+    upgradePurchase products[6];
 
     std::vector<Laser> lasers;
     std::vector<Wall> walls;
-    std::list<Item*> levelItems;
+    
+    std::list<Element*> elements;
 
     char *currDialogue;
     bool displayingDialogue = false;
 
-    Level currentLevel = LEVEL_ONE;
     DisplayState currentDisplay = HUD;
 
     Texture background;
@@ -54,16 +58,42 @@ namespace GameScene {
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
         background = loadTexture("assets/images/background.png");
 
+
         //init hero
         hero.tex = loadTexture("./assets/images/hero.png");
 
-        //init items
-        static Texture *baseWeaponTex = new Texture(loadTexture("./assets/images/items/weapon_small_01.png"));
-        static Animation *baseWeaponAni = new Animation(loadAnimation("./assets/images/items/weapon_large_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true));
+        hero.currWeapon = new Weapon(
+            new Texture(loadTexture("./assets/images/items/weapon_small_01.png")),
+            0.25f, 2.0f, 100
+        ); 
 
-        hero.currWeapon = new Weapon(baseWeaponAni, baseWeaponTex, (Rect){0, 0, 0, 0}, "'E' to grab", 1.0f, 1.0f, 100);
-        loadDefinitions();
-        loadLevel(currentLevel, levelItems);
+        hero.currArmour = new Armour(
+            new Texture(loadTexture("./assets/images/items/armour_small_01.png")),
+            100, 100
+        ); 
+        hero.currUpgrade = new Upgrade(
+            new Texture(loadTexture("./assets/images/items/upgrade_small_01.png")),
+            NONE, 0.0f, 0
+        );
+
+        //init elements
+        static DisplayElement messageElement = (DisplayElement){
+            "Hmm... a new message", 
+            32,
+            new Texture(loadTexture("./assets/images/message_large.png"))
+        };
+
+        elements.emplace_back(new Element(
+            new Animation(loadAnimation("./assets/images/items/message_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 2.0f, true)), 
+            (Rect){500, halfWindowHeight, 40, 40}, "'E' to read", SHOW_DISPLAY, &messageElement
+        ));
+
+        elements.emplace_back(new Element(
+            new Animation(loadAnimation("./assets/images/items/workbench_animation_grid.png", (Rect){0, 0, 30, 20}, 3, 3.0f, true)), 
+            (Rect){500, WINDOW_HEIGHT-40, 60, 40}, "'E' to open", OPEN_WORKBENCH, nullptr
+        ));
+
+        wallTexture = loadTexture("./assets/images/wall.png");
 
         //init other animations
         lazerHit = loadAnimation("./assets/images/laser_hit_animation_grid.png", (Rect){0, 0, 20, 20}, 6, 0.5f, false);
@@ -74,13 +104,10 @@ namespace GameScene {
         hudDest = (Rect){0, 0, hudWidth, hudHeight};
 
         //init level
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, 0, 300, 200}});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, 0, 300, 200}});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, 0, 300, 200}});
-
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-900.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-600.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
-        walls.push_back((Wall){(Rect){WINDOW_WIDTH-300.0f, WINDOW_HEIGHT-200.0f, 300, 200}});
+        walls.emplace_back(0, 0);
+        walls.emplace_back(WINDOW_WIDTH-200, 0);
+        walls.emplace_back(0, WINDOW_HEIGHT-200);
+        walls.emplace_back(WINDOW_WIDTH-200, WINDOW_HEIGHT-200);
 
         std::cout << "width: " << WINDOW_WIDTH << " height: " << WINDOW_HEIGHT << "\n";
 
@@ -100,20 +127,17 @@ namespace GameScene {
             Vec2(WINDOW_WIDTH - 70, WINDOW_HEIGHT - 40), Vec2(10, 10), "Exit", pressStart, 20.0f, Color::black, Color::white, QUIT, buttonBackground
         );
 
+        //init products
+        //init products
+        products[0] = (upgradePurchase){0, 100, 5, "total energy"};
+        products[1] = (upgradePurchase){1, 100, 5, "firing speed"};
+        products[2] = (upgradePurchase){2, 100, 5, "reload speed"};
+        products[3] = (upgradePurchase){3, 100, 5, "resistance"};
+        products[4] = (upgradePurchase){4, 100, 5, "health"};
+        products[5] = (upgradePurchase){5, 100, 1, "speed"};
+
         //init aliens
-        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");
-
-        for(Wall a : walls) {
-            wallInput.push_back(a.rect);
-        }
-        
-
-        addAlien(aliens, alienSpritesheet, HATCHLING);
-        addAlien(aliens, alienSpritesheet, MATURE);
-        addAlien(aliens, alienSpritesheet, SPITTER);
-        aliens[0].transform.pos = Vec2(1000, halfWindowHeight);
-        aliens[1].transform.pos = Vec2(500, halfWindowHeight);
-        aliens[2].transform.pos = Vec2(700, halfWindowHeight);
+        alienSpritesheet = loadTexture("./assets/images/aliens/alien_spritesheet_v3.png");        
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
@@ -127,19 +151,51 @@ namespace GameScene {
                 currentDisplayElement = pausedElement;
             }
 
+            //chech for wave updates
+            if (aliens.empty() && gameIsActive) { //countdown once the horde is empty
+                waveCooldown.active = true;
+
+                if (updateTimer(&waveCooldown, dt)) {   
+                    waveCooldown.active = false;
+                    displayCountdown = false;
+
+                    addAlien(aliens, alienSpritesheet, HATCHLING);
+
+                    waveCounter++;
+                    if (waveCounter % 5 == 0)
+                    std::cout << "Spawn more aliens\n";
+                } else if (waveCooldown.active) {
+                    cooldownStr = std::to_string((int)(15 - SDL_floor(waveCooldown.elasped)));
+                    displayCountdown = true;
+                }
+            }
+
+            //debug
+            // -- TODO: REMOVE BEFORE SUBMITION PLEASE FOR THE LOVE OF GOD --
+            if (keyIsPressed(KEY_K)) {
+                aliens.clear();
+            }
+            if (keyIsPressed(KEY_G)) {
+                gameIsActive = true;
+            }
+
             //move hero
-            if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -3));
-            if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-3, 0));
-            if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, 3));
-            if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(3, 0));
+            if (keyIsPressed(KEY_W)) hero.transform.translate(Vec2(0, -hero.speed));
+            if (keyIsPressed(KEY_A)) hero.transform.translate(Vec2(-hero.speed, 0));
+            if (keyIsPressed(KEY_S)) hero.transform.translate(Vec2(0, hero.speed));
+            if (keyIsPressed(KEY_D)) hero.transform.translate(Vec2(hero.speed, 0));
 
             hero.transform.rotateTo(mousePosition());
             hero.transform.updateBoundingBox();
 
-            //Detect collision, and then calculate overlap to push back hero
+           //Detect collision, and then calculate overlap to push back hero
             for (Wall W : walls) {
-                if (collision(hero.transform.getBoundingBox(), 0.0f, W.rect, 0.0f)) {
-                    handleCollision(W.rect);
+                if (distance(W.pos, hero.transform.pos) > hero.detectionInner) {
+                    continue;
+                }
+                Rect wallRect = {W.pos.x, W.pos.y, W.size.x, W.size.y};
+                if (collision(hero.transform.getBoundingBox(), 0.0f, wallRect, 0.0f)) {
+                    handleCollision(wallRect);
                 }
             }
 
@@ -191,7 +247,8 @@ namespace GameScene {
                 //time complexity is O(n^2), but with very little walls and lasers realistically, this is pretty much free
                 for (Wall& w : walls) {
                     Rect laserRect = {L.transform.getPosition().x, L.transform.getPosition().y, L.transform.getSize().x, L.transform.getSize().y};
-                    if (collision(laserRect, L.transform.getAngle(), w.rect, 0.0f)) {
+                    Rect wallRect = {w.pos.x, w.pos.y, w.size.x, w.size.y};
+                    if (collision(laserRect, L.transform.getAngle(), wallRect, 0.0f)) {
                         deleteLazer(L, i);
                         continue;
                     }
@@ -200,29 +257,21 @@ namespace GameScene {
                 i++;
             }
 
-            //check contact with items
-            int ammountColls = 0;
-            for (auto item = levelItems.begin(); item != levelItems.end(); ) {
+            //check contact with elements
+            int collisionCount = 0;
+            for (auto ele = elements.begin(); ele != elements.end(); ++ele) {
                 if (collision(hero.transform.getPosition(LOCAL), hero.sightRad, 
-                        Vec2((*item)->dst.x, (*item)->dst.y), Vec2((*item)->dst.width, (*item)->dst.height))) {
-                    currDialogue = (*item)->hoverDialogue;
+                        Vec2((*ele)->dst.x, (*ele)->dst.y), Vec2((*ele)->dst.width, (*ele)->dst.height))) {
+                    currDialogue = (*ele)->hoverDialogue;
                     displayingDialogue = true;
-                    ammountColls++;
+                    collisionCount++;
 
-                    if (keyPressedThisFrame(KEY_E)){
-                        Item *dropped = (*item)->dropItem(hero);
-                        if (dropped != nullptr) levelItems.push_back(dropped);
-                        (*item)->pickup(hero, &currentDisplay, &currentDisplayElement);
-                        item = levelItems.erase(item);
-                        break;
-                    } else {
-                        ++item;
+                    if (keyPressedThisFrame(KEY_E)) {
+                        (*ele)->pickup(hero, currentDisplay, currentDisplayElement);
                     }
-                } else {
-                    ++item;
-                }
+                } 
             }
-            if (ammountColls == 0) displayingDialogue = false;
+            if (collisionCount == 0) displayingDialogue = false;
 
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
@@ -288,21 +337,32 @@ namespace GameScene {
             //     }
             // }
 
+        } else if (currentDisplay == ELEMENT) {
+            //check for display updates
+            if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
+
+            runButton(displayElementExit);
         } else {
             //check for display updates
             if (keyPressedThisFrame(KEY_ESCAPE)) currentDisplay = HUD;
 
-            //run button
-            if(collision(mousePosition(), displayElementExit.position, displayElementExit.size)) {
-                displayElementExit.hovered = true;
+            runButton(displayElementExit);
 
-                // Mouse Click
-                if(mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) {
-                    currentDisplay = HUD;
-                }
-            } else {
-                displayElementExit.hovered = false;
-            }
+            //get user input for upgrade
+
+            if (keyReleasedThisFrame(KEY_1)) { //more energy
+                attemptPurchase(products[0], hero.currWeapon->fullEnergy, products[0].value);
+            } else if (keyReleasedThisFrame(KEY_2)) { //fire speed
+                attemptPurchase(products[1], hero.currWeapon->fireTimer->interval, -products[1].value);
+            } else if (keyReleasedThisFrame(KEY_3)) { //reload speed
+                attemptPurchase(products[2], hero.currWeapon->reloadTimer->interval, -products[2].value);
+            } else if (keyReleasedThisFrame(KEY_4)) { //resistance
+                attemptPurchase(products[3], hero.currArmour->resistance, products[3].value);
+            } else if (keyReleasedThisFrame(KEY_5)) { //health
+                attemptPurchase(products[4], hero.currArmour->healthUpgrade, products[4].value);
+            } else if (keyReleasedThisFrame(KEY_6)) { //upgrade
+                attemptPurchase(products[5], hero.speed, products[5].value);
+            } 
         }
     }
 
@@ -330,13 +390,14 @@ namespace GameScene {
 
         //walls
         for (Wall &W : walls) {
-            drawRect(W.rect, Color::yellow);
+            drawTexture(wallTexture, W.pos, W.size);
+            //drawRect(W.rect, Color::yellow);
         }
 
-        //display items
-        for (Item* item : levelItems) {
-            int indx = getAnimationIndex(item->animationLarge, current, nullptr);
-            drawTexture(item->animationLarge->frames.at(indx), item->dst);
+        //display elements
+        for (Element* ele : elements) {
+            int indx = getAnimationIndex(ele->animate, current, nullptr);
+            drawTexture(ele->animate->frames.at(indx), ele->dst);
         }
 
         //display current animations
@@ -483,6 +544,53 @@ namespace GameScene {
             for (int x = 1; x < 63; x++) {
                 shadows[y][x] = temp[y][x];
             }
+        }
+    }
+
+    void runButton(Button &b) {
+        if(collision(mousePosition(), b.position, b.size)) {
+            b.hovered = true;
+
+            // Mouse Click
+            if(mouseButtonPressedThisFrame(MOUSE_BUTTON_LEFT)) {
+                currentDisplay = HUD;
+            }
+        } else {
+            b.hovered = false;
+        }
+    }
+
+    bool attemptPurchase(upgradePurchase& purchase, float& data, float updateVal) {
+        //remove credits
+
+        //update data
+        data += updateVal;
+
+        //update purchase struct
+        purchase.cost += 20;
+        if (purchase.indx != 5) {
+            purchase.value += 5;
+        }
+        
+        return true;
+    }
+
+    void addAliensForWave(int numHatching, int numMature, int numSpitter, int waveNum) {
+        if (waveNum % 5 == 0) {
+            addAlien(aliens, alienSpritesheet, SPITTER);
+            return;
+        }
+
+        for (int i = 0; i < numHatching; i++) {
+            addAlien(aliens, alienSpritesheet, HATCHLING);
+        }
+
+        for (int i = 0; i < numMature; i++) {
+            addAlien(aliens, alienSpritesheet, MATURE);
+        }
+
+        for (int i = 0; i < numSpitter; i++) {
+            addAlien(aliens, alienSpritesheet, SPITTER);
         }
     }
 
