@@ -395,8 +395,8 @@ void drawAlien(Alien &alien, bool active, float start) {
     }
     
     // made changes to get size getting from transform
-    drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
-    drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
+    //drawRect(alien.transform.pos - alien.transform.size/2, alien.transform.size, Color::red, alien.transform.angle);
+    //drawRect(alien.transform.getBoundingBox(), Color::green, 0.0f);
     if(alien.shooting) {
         fillCircle(alien.projectilePos, alien.projectileRad, Color::green);
     }
