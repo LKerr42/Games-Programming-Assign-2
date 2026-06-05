@@ -59,7 +59,7 @@ void alienCollision(std::vector<Alien> &Horde) {
     }
 }
 
-bool wallCollisions(Alien &alien, std::vector<Rect> &walls) {
+bool wallCollisions(Alien &alien, std::vector<Vec2> &walls) {
     bool CheckingCollision = false;
 
     for(int i = 0; i < walls.size(); i++) {
@@ -254,7 +254,7 @@ void spit(Alien &alien, Vec2 target, float dt) {
     alien.projectilePos += alien.projectileVel * dt;
 }
 
-void fsmAlien(std::vector<Alien> &Horde, std::vector<Rect> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start) {
+void fsmAlien(std::vector<Alien> &Horde, std::vector<Vec2> &walls, std::vector<GameScene::Laser> &lasers, Hero &p1, audioClips &audioObject, float dt, float start) {
 
     //alienCollision(Horde);
     for(int i = 0; i < Horde.size(); i++) {

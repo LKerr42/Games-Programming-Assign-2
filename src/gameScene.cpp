@@ -53,7 +53,7 @@ namespace GameScene {
     float current;
 
     float start;
-    std::vector<Rect> wallInput;
+    std::vector<Vec2> wallInput;
     std::vector<Transform> laserInput;
 
     bool playAliens = false;
@@ -321,10 +321,8 @@ namespace GameScene {
             //if (distance(hero.transform.getPosition(LOCAL), Vec2(item->dst.x, item->dst.y)) < hero.sightRad) {}
 
             //update aliens
-            /*laserInput.clear();
-            for(Laser l : lasers) {
-                laserInput.push_back(l.transform);
-            }*/
+            wallInput.clear();
+            for(Wall l : walls) {wallInput.push_back(l.pos);}
             fsmAlien(aliens, wallInput, lasers, hero, soundFX, dt, current);
             //fsmAlien(hatchlings, hero, dt, current); // 4th parameter may be a dud
             //fsmAlien(matureAliens, hero, dt, current);
