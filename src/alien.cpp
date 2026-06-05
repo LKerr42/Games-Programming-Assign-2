@@ -187,7 +187,7 @@ bool addAlien(std::vector<Alien> &Horde, Texture spritesheet, AlienType type) {
             break;
     }
 
-    alien.state = IDLE;
+    alien.state = ANGRY;
     alien.active = true;
 
     alien.animate.numFrames = 4;
