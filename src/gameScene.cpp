@@ -61,7 +61,7 @@ namespace GameScene {
     void init() {
         setWindowTitle("Pest Control - Playing");
         pressStart = loadFont("assets/fonts/PressStart2P-Regular.ttf");
-        background = loadTexture("assets/images/background.png");
+        background = loadTexture("assets/images/backgrounG.png");
 
         loadLaserShoot(soundFX, "./assets/Soundfx/laserSound/freesound_community-laser-45816.mp3");
         loadLaserHit(soundFX, "./assets/Soundfx/laserSound/universfield-blaster-shot-229313.mp3");
