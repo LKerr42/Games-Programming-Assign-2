@@ -160,9 +160,9 @@ namespace GameScene {
         aliens[0].transform.pos = Vec2(1000, halfWindowHeight);
         
         //init waves
-        activateTimer(&waveCooldown, 15.0f, false, false);
+        activateTimer(&waveCooldown, 10.0f, false, false);
         displayCountdown = false;
-        cooldownStr = "15";
+        cooldownStr = "10";
 
         current = getTimeInSeconds();
         start = getTimeInSeconds();
@@ -199,14 +199,16 @@ namespace GameScene {
                 if (updateTimer(&waveCooldown, dt)) {   
                     waveCooldown.active = false;
                     displayCountdown = false;
-
-                    addAlien(aliens, alienSpritesheet, HATCHLING);
-
                     waveCounter++;
-                    if (waveCounter % 5 == 0)
-                    std::cout << "Spawn more aliens\n";
+
+                    //addAlien(aliens, alienSpritesheet, HATCHLING);
+                    int numH;
+                    int numM;
+                    int numS;
+                    addAliensForWave(numH, numM, numS, waveCounter);
+                    //std::cout << "Spawn more aliens\n";
                 } else if (waveCooldown.active) {
-                    cooldownStr = std::to_string((int)(15 - SDL_floor(waveCooldown.elasped)));
+                    cooldownStr = std::to_string((int)(10 - SDL_floor(waveCooldown.elasped)));
                     displayCountdown = true;
                 }
                 
@@ -472,7 +474,7 @@ namespace GameScene {
         }
 
         if (displayCountdown) {
-            Color col = ((int)(15 - SDL_floor(waveCooldown.elasped)) > 5) ? Color::white : Color::red;
+            Color col = ((int)(10 - SDL_floor(waveCooldown.elasped)) > 5) ? Color::white : Color::red;
             drawText(Vec2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), cooldownStr.c_str(), col, pressStart, 32, 0.0f);
         }
 
